@@ -1,0 +1,23 @@
+services:
+  db:
+    image: mysql:26.7.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    ports:
+      - 3308:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+      start_period: 15s
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:

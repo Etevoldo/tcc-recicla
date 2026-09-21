@@ -2,13 +2,16 @@
 
 const mysql = require('mysql2');
 
+console.log('i live');
+
 const connection = mysql.createConnection({
-    host: '127.0.0.1',
-    port: '3307',
+    host: 'db',
+    port: '3306',
     user: 'root',
     password: 'secret',
     database: 'reciclaapi'
 });
+
 
 connection.connect();
 
