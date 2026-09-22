@@ -18,6 +18,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    ports:
+      - 3002:3000
+      - 9229:9229
 
 volumes:
   mysql_data:

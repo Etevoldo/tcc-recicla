@@ -1,0 +1,13 @@
+{
+    "configurations": [
+    {
+        "address": "localhost",
+        "localRoot": "${workspaceFolder}/backend",
+        "name": "Attach to Remote",
+        "port": 9229,
+        "remoteRoot": "/app",
+        "request": "attach",
+        "type": "node"
+    }
+    ]
+}

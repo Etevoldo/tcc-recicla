@@ -1,27 +1,16 @@
 'use strict';
 
-import mysql from 'mysql2'
-import { Sequelize } from 'sequelize';
+import { sequelize } from "./models/init_models.mjs";
+import express from "express"
 
-const sequelize = new Sequelize(
-    'reciclaapi',
-    'root',
-    'secret',
-    {
-        host: 'db',
-        dialect: 'mysql',
-        port: 3306,
-    }
-)
+const app = express();
 
-async function run() {
-    try {
-        await sequelize.authenticate();
-        console.log('Sucessfull connection')
-    } 
-    catch (error) {
-        console.error('Unnable to connect: ', error);
-    }
-}
+app.get('/', (req, res) =>{
+    res.send('Hello world\n');
+});
 
-run();
+const PORT = 3000;
+const HOST = '0.0.0.0';
+app.listen(PORT, HOST);
+
+console.log(`listening on http://${HOST}:${PORT}`);
