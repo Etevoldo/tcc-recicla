@@ -15,6 +15,8 @@
   "author": "voldo",
   "license": "MIT",
   "dependencies": {
-    "mysql2": "^3.24.4"
+    "dotenv": "^18.0.3",
+    "mysql2": "^3.24.4",
+    "sequelize": "^6.37.8"
   }
 }

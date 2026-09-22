@@ -1,23 +1,27 @@
 'use strict';
 
 import mysql from 'mysql2'
+import { Sequelize } from 'sequelize';
 
-console.log('i live');
+const sequelize = new Sequelize(
+    'reciclaapi',
+    'root',
+    'secret',
+    {
+        host: 'db',
+        dialect: 'mysql',
+        port: 3306,
+    }
+)
 
-const connection = mysql.createConnection({
-    host: 'db',
-    port: '3306',
-    user: 'root',
-    password: 'secret',
-    database: 'reciclaapi'
-});
+async function run() {
+    try {
+        await sequelize.authenticate();
+        console.log('Sucessfull connection')
+    } 
+    catch (error) {
+        console.error('Unnable to connect: ', error);
+    }
+}
 
-
-connection.connect();
-
-connection.query('SELECT * FROM buyers', function(error, results, fields) {
-  if (error) throw error;
-  console.log(results);
-});
-
-connection.end();
+run();
