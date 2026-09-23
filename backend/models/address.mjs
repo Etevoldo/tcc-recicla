@@ -3,8 +3,8 @@
 import { DataTypes, Model } from "sequelize";
 
 function addressModel(sequelize) {
-    class address extends Model {};
-    address.init(
+    class Address extends Model {};
+    Address.init(
         {
             cep: {
                 type: DataTypes.STRING,
@@ -19,8 +19,11 @@ function addressModel(sequelize) {
                 type: DataTypes.DOUBLE,
                 allowNull: false
             }
+        },
+        {
+            sequelize
         }
     );
-    return address;
+    return Address;
 }
 export { addressModel };

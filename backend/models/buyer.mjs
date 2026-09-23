@@ -19,6 +19,9 @@ function buyerModel(sequelize) {
             cep: DataTypes.STRING,
             address: DataTypes.STRING,
             addressNumber: DataTypes.STRING
+        },
+        {
+            sequelize,
         }
     );
     return Buyer;
