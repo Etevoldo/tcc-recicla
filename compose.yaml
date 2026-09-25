@@ -22,6 +22,13 @@ services:
     ports:
       - 3002:3000
       - 9229:9229
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend
+          target: /app
+        - action: rebuild
+          path: ./backend/package.json
 
 volumes:
   mysql_data:
