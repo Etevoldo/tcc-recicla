@@ -1,14 +1,20 @@
 'use strict';
 
 import dotenv from  'dotenv';
-import { db } from "./models/init_models.mjs";
 import express from "express";
+import { buyers } from './routes/buyer.mjs'
+import morgan from 'morgan'
 
 dotenv.config();
 const app = express();
 
+app.use(express.json());
+app.use(morgan('tiny'));
+app.use('/buyers', buyers);
+
 app.get('/', (req, res) =>{
-    res.send('Hello world!\n');
+    res.send('Hello world!!\n');
+    console.log(req.body.name);
 });
 
 async function syncTables(db) {
@@ -16,13 +22,6 @@ async function syncTables(db) {
 }
 
 //syncTables(db);
-
-try {
-  await db.sequelize.authenticate();
-  console.log('Connection has been established successfully.');
-} catch (error) {
-  console.error('Unable to connect to the database:', error);
-}
 
 const PORT = process.env.APP_PORT;
 const HOST = process.env.APP_HOST;
