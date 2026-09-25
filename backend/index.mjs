@@ -1,19 +1,21 @@
 'use strict';
 
+import dotenv from  'dotenv';
 import { db } from "./models/init_models.mjs";
-import express from "express"
+import express from "express";
 
+dotenv.config();
 const app = express();
 
 app.get('/', (req, res) =>{
-    res.send('Hello world\n');
+    res.send('Hello world!\n');
 });
 
 async function syncTables(db) {
     await db.sequelize.sync({force: true});
 }
 
-syncTables(db);
+//syncTables(db);
 
 try {
   await db.sequelize.authenticate();
@@ -22,8 +24,12 @@ try {
   console.error('Unable to connect to the database:', error);
 }
 
-const PORT = 3000;
-const HOST = '0.0.0.0';
-app.listen(PORT, HOST);
+const PORT = process.env.APP_PORT;
+const HOST = process.env.APP_HOST;
+app.listen(PORT, HOST, (error) => {
+  if (error) {
+    throw error;
+  }
+  console.log(`listening on http://${HOST}:${PORT}`);
+});
 
-console.log(`listening on http://${HOST}:${PORT}`);
