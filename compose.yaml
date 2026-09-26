@@ -1,4 +1,13 @@
 services:
+  frontend:
+    build: ./frontend
+    init: true
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - frontend_node_modules:/app/node_modules
+
   db:
     image: mysql:26.7.0
     environment:
@@ -31,4 +40,5 @@ services:
           path: ./backend/package.json
 
 volumes:
+  frontend_node_modules:
   mysql_data:
