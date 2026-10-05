@@ -1,7 +1,9 @@
 'use strict'
 
+import http from "http";
 import { db } from "../models/init_models.mjs"
 const Buyer = db.buyer;
+const Address = db.address;
 
 export async function retrieveBuyer(req, res) {
     try {
@@ -33,7 +35,22 @@ export async function createBuyer(req, res) {
             address: req.body.address,
             addressNumber: req.body.addressNumber,
         });
-        //TODO register cordenates into addresses relation
+
+        const address = await Address.findByPk(insertedBuyer.cep);
+
+        // insert into addresses db if a new address
+        if (address === null) {
+            const response = await fetch(
+                `https://cep.awesomeapi.com.br/json/${insertedBuyer.cep}`);
+            const data = await response.json();
+
+            await Address.create({
+                cep: insertedBuyer.cep,
+                latitude: parseFloat(data.lat),
+                longitude: parseFloat(data.lng)
+            });
+        }
+
         res.status(200).send({
             id: insertedBuyer.id,
             name: insertedBuyer.name,
@@ -45,7 +62,9 @@ export async function createBuyer(req, res) {
             addressNumber: insertedBuyer.addressNumber
         });
     } catch (error) {
-        return res.status(403).send({ message: 'Comprador não encontrado'});
+        console.error(error);
+        return res.status(403).send({ 
+            message: 'Não foi possivel cadastrar o comprador'});
     }
     return;
 }
