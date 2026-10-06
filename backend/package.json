@@ -17,6 +17,7 @@
   "dependencies": {
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
+    "geographiclib-geodesic": "^2.2.0",
     "mysql2": "^3.24.4",
     "sequelize": "^6.37.8"
   },
