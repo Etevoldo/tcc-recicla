@@ -1,6 +1,5 @@
 'use strict'
 
-import http from "http";
 import { db } from "../models/init_models.mjs"
 const Buyer = db.buyer;
 const Address = db.address;
@@ -44,11 +43,13 @@ export async function createBuyer(req, res) {
                 `https://cep.awesomeapi.com.br/json/${insertedBuyer.cep}`);
             const data = await response.json();
 
-            await Address.create({
-                cep: insertedBuyer.cep,
-                latitude: parseFloat(data.lat),
-                longitude: parseFloat(data.lng)
-            });
+            if (response.status === 200) {
+                await Address.create({
+                    cep: insertedBuyer.cep,
+                    latitude: parseFloat(data.lat),
+                    longitude: parseFloat(data.lng)
+                });
+            }
         }
 
         res.status(200).send({
