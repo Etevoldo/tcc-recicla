@@ -11,6 +11,7 @@ router.get('/', controller.retrieveAllAddresses);
 router.post('/', controller.createAddress);
 router.delete('/', controller.deleteAddress);
 
+router.get('/searchBuyers/:cep/:radius', controller.searchBuyers);
 router.get('/searchBuyers/:cep', controller.searchBuyers);
 // get all products of the buyer
 //router.get('/:id/products', controller.getProducts)

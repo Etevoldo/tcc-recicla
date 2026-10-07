@@ -4,13 +4,14 @@ import { db } from "../models/init_models.mjs"
 import geodesic from "geographiclib-geodesic"
 const geod = geodesic.Geodesic.WGS84;
 const Address = db.address;
+const Buyer = db.buyer;
 
 export async function retrieveAddress(req, res) {
     try {
         const address = await Address.findByPk(req.params.cep);
 
         res.status(200).send({
-            cep: address.cep,
+            cep: address.cep, 
             lat: address.latitude,
             longitude: address.longitude
         });
@@ -41,22 +42,48 @@ export async function searchBuyers(req, res) {
             `https://cep.awesomeapi.com.br/json/${req.params.cep}`);
         const finderAddress = await response.json();
 
-        const nearbyAddresses = [];
-
         const addresses = await Address.findAll();
         if (addresses.length === 0) res.status(404).send();
 
+        const nearbyAddresses = [];
+
+        // raio padrão 15km
+        if (!req.params.radius) req.params.radius = 15000
+        else req.params.radius = parseInt(req.params.radius);
+
+        // calculo de zonas postais próximas
         for (const address of addresses) {
             const result = geod.Inverse(
                 finderAddress.lat, finderAddress.lng,
                 address.latitude, address.longitude);
 
-            if (result.s12.toFixed(3) < 10000) {
+            if (result.s12.toFixed(3) < req.params.radius) {
                 nearbyAddresses.push(address.cep);
             }
         }
 
-        res.status(200).send({'Endereços próximos': nearbyAddresses});
+        // calculo de compradores próximos para cada zona postal
+        const nearbyBuyers = [];
+        for (const address of nearbyAddresses) {
+            const buyers = await Buyer.findAll({
+                where: {
+                    cep: address
+                },
+            });
+
+            for (const buyer of buyers) {
+                nearbyBuyers.push({
+                    name: buyer.name,
+                    email: buyer.email,
+                    phoneNumber: buyer.phoneNumber,
+                    cep: buyer.cep,
+                    address: buyer.address,
+                    addressNumber: buyer.addressNumber,
+                });
+            }
+        }
+
+        res.status(200).send({'Compradores Próximos': nearbyBuyers});
 
     } catch (error) {
         console.error(error);
