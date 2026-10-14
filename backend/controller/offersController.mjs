@@ -19,7 +19,7 @@ export async function retrieveOffers(req, res) {
 export async function retrieveOffer(req, res) {
     try {
         const BuyerId = req.params.BuyerId;
-        const ProductId = req.params.ProductIdId;
+        const ProductId = req.params.ProductId;
         const offer = await Offer.findOne({
             where: {
                 BuyerId: BuyerId,
@@ -91,7 +91,7 @@ export async function createOffer(req, res) {
 export async function updateOffer(req, res) {
     try {
         const BuyerId = req.params.BuyerId;
-        const ProductId = req.params.ProductIdId;
+        const ProductId = req.params.ProductId;
 
         const whereClause = { BuyerId: BuyerId, ProductId: ProductId };
 
@@ -101,7 +101,7 @@ export async function updateOffer(req, res) {
         );
 
         const updatedOffer = await Offer.findOne({ where: whereClause });
-        req.status(200).send(JSON.stringify(updatedOffer));
+        res.status(200).send(JSON.stringify(updatedOffer));
 
     } catch (error) {
         console.error(error);
@@ -114,7 +114,7 @@ export async function deleteBuyerOffers(req, res) {
         const BuyerId = req.params.BuyerId;
 
         await Offer.destroy({ where: { BuyerId: BuyerId } });
-        req.status(204).send();
+        res.status(204).send();
 
     } catch (error) {
         console.error(error);
@@ -125,7 +125,7 @@ export async function deleteBuyerOffers(req, res) {
 export async function deleteOffer(req, res) {
     try {
         const BuyerId = req.params.BuyerId;
-        const ProductId = req.params.ProductIdId;
+        const ProductId = req.params.ProductId;
 
         await Offer.update(
             { price: req.body.price },
@@ -136,7 +136,7 @@ export async function deleteOffer(req, res) {
                 },
             },
         );
-        req.status(204).send;
+        res.status(204).send;
 
     } catch (error) {
         console.error(error);
