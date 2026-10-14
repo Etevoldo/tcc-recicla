@@ -4,7 +4,7 @@
   "description": "api to find recicling vendors",
   "main": "index.js",
   "scripts": {
-    "test": "test",
+    "testData": "node ./models/testData.mjs",
     "start": "node index.mjs"
   },
   "keywords": [
