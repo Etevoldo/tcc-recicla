@@ -32,6 +32,24 @@ export async function retrieveBuyer(req, res) {
     }
 }
 
+export async function retrieveBuyerProducts(req, res) {
+    try {
+        const buyer = await Buyer.findByPk(
+            req.params.id,
+        );
+
+        const products = await buyer.getProducts(
+            { attributes: { exclude: ['createdAt','updatedAt']} }
+        );
+
+        res.status(200).send(JSON.stringify(products));
+    
+    } catch (error) {
+        console.error(error);
+        return res.status(404).send({ message: 'Comprador não tem produtos'});
+    }
+}
+
 export async function createBuyer(req, res) {
     //TODO checking if body is in right format
     try {
