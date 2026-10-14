@@ -11,7 +11,7 @@ export async function retrieveOffers(req, res) {
             return res.status(404).send({ message: 'Ofertas não encontradas'});
         }
 
-        return res.status(200).send(JSON.stringify(offers));
+        return res.status(200).json(offers);
 
     } catch (error) {
         console.error(error);
@@ -51,8 +51,9 @@ export async function retrieveOffer(req, res) {
 // all offers of a buyer
 export async function retrieveOffersByBuyer(req, res) {
     try {
-        const buyer = await db.buyer.findByPk(req.params.BuyerId);
-        const offers = await buyer.getOffers();
+        const offers = await Offer.findAll(
+            { where: { BuyerId: req.params.BuyerId } }
+        );
 
         if (offers.length === 0) {
             return res.status(404).send({ message: 'Ofertas não encontradas'});
@@ -68,8 +69,9 @@ export async function retrieveOffersByBuyer(req, res) {
 
 export async function retrieveOffersByProduct(req, res) {
     try {
-        const product = await db.product.findByPk(req.params.ProductId);
-        const offers = await product.getOffers();
+        const offers = await Offer.findAll(
+            { where: { BuyerId: req.params.ProductId } }
+        );
 
         if (offers.length === 0) {
             return res.status(404).send({ message: 'Ofertas não encontradas'});
