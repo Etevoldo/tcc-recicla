@@ -10,11 +10,7 @@ export async function retrieveAddress(req, res) {
     try {
         const address = await Address.findByPk(req.params.cep);
 
-        res.status(200).send({
-            cep: address.cep, 
-            lat: address.latitude,
-            longitude: address.longitude
-        });
+        res.status(200).json(address);
     } catch (error) {
         console.error(error);
         return res.status(404).send(
@@ -25,7 +21,7 @@ export async function retrieveAddress(req, res) {
 export async function retrieveAllAddresses(req, res) {
     try {
         const addresses = await Address.findAll();
-        if (addresses.length() === 0) res.status(404).send();
+        if (addresses.length === 0) res.status(404).send();
 
         //TODO pagination
         res.status(200).send({ 'endereços': addresses })
@@ -38,11 +34,38 @@ export async function retrieveAllAddresses(req, res) {
 
 export async function searchBuyers(req, res) {
     try {
-        const response = await fetch(
-            `https://cep.awesomeapi.com.br/json/${req.params.cep}`);
-        const finderAddress = await response.json();
+        let finderAddress = await Address.findByPk(
+            req.params.cep,
+            { attributes: ['cep', 'latitude', 'longitude'] }
+        );
 
-        const addresses = await Address.findAll();
+        if (finderAddress === null) {
+            console.log(
+                "Address " +
+                req.params.cep +
+                " not found in local db using awesomeapi...");
+            const response = await fetch(
+                `https://cep.awesomeapi.com.br/json/${req.params.cep}`);
+            finderAddress = await response.json();
+
+            // renaming variables 
+            finderAddress.latitude = finderAddress.lat;
+            finderAddress.longitude = finderAddress.lng;
+
+            console.log("Found");
+
+            await Address.create({
+                cep: finderAddress.cep,
+                latitude: parseFloat(finderAddress.lat),
+                longitude: parseFloat(finderAddress.lng)
+            });
+            console.log(`Insert cep: "${finderAddress.cep}" into local db`);
+        }
+
+        const addresses = await Address.findAll(
+            { attributes: ['cep', 'latitude', 'longitude'] }
+        );
+
         if (addresses.length === 0) res.status(404).send();
 
         const nearbyAddresses = [];
@@ -54,7 +77,7 @@ export async function searchBuyers(req, res) {
         // calculo de zonas postais próximas
         for (const address of addresses) {
             const result = geod.Inverse(
-                finderAddress.lat, finderAddress.lng,
+                finderAddress.latitude, finderAddress.longitude,
                 address.latitude, address.longitude);
 
             if (result.s12.toFixed(3) < req.params.radius) {
@@ -84,7 +107,7 @@ export async function searchBuyers(req, res) {
             }
         }
 
-        res.status(200).send({'Compradores Próximos': nearbyBuyers});
+        res.status(200).send({'compradoresProximos': nearbyBuyers});
 
     } catch (error) {
         console.error(error);
@@ -107,11 +130,13 @@ export async function createAddress(req, res) {
             `https://cep.awesomeapi.com.br/json/${req.params.cep}`);
         const data = await response.json();
 
-        await Address.create({
+        const newAddress = await Address.create({
             cep: req.params.cep,
             latitude: parseFloat(data.lat),
             longitude: parseFloat(data.lng)
         });
+
+        res.status(201).json(newAddress);
 
     } catch (error) {
         console.error(error);
