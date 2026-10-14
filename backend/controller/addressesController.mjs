@@ -107,7 +107,10 @@ export async function searchBuyers(req, res) {
             }
         }
 
-        res.status(200).send({'compradoresProximos': nearbyBuyers});
+        res.status(200).send({
+            'compradoresProximos': nearbyBuyers,
+            'raio': `${req.params.radius / 1000}Km`
+        });
 
     } catch (error) {
         console.error(error);
