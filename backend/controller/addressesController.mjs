@@ -8,7 +8,10 @@ const Buyer = db.buyer;
 
 export async function retrieveAddress(req, res) {
     try {
-        const address = await Address.findByPk(req.params.cep);
+        const address = await Address.findByPk(
+            req.params.cep,
+            { attributes: { exclude: ['createdAt','updatedAt'] } }
+        );
 
         res.status(200).json(address);
     } catch (error) {
@@ -20,7 +23,9 @@ export async function retrieveAddress(req, res) {
 
 export async function retrieveAllAddresses(req, res) {
     try {
-        const addresses = await Address.findAll();
+        const addresses = await Address.findAll(
+            { attributes: { exclude: ['createdAt','updatedAt'] } }
+        );
         if (addresses.length === 0) res.status(404).send();
 
         //TODO pagination
@@ -89,9 +94,8 @@ export async function searchBuyers(req, res) {
         const nearbyBuyers = [];
         for (const address of nearbyAddresses) {
             const buyers = await Buyer.findAll({
-                where: {
-                    cep: address
-                },
+                where: { cep: address },
+                attributes: { exclude: ['createdAt','updatedAt'] }
             });
 
             for (const buyer of buyers) {
@@ -156,6 +160,7 @@ export async function deleteAddress(req, res) {
                 cep: req.params.cep
             }
         });
+        res.status(204).send();
     } catch (error) {
         console.error(error);
         return res.status(403).send({
