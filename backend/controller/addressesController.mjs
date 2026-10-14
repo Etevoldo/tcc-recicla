@@ -73,6 +73,7 @@ export async function searchBuyers(req, res) {
 
             for (const buyer of buyers) {
                 nearbyBuyers.push({
+                    id: buyer.id,
                     name: buyer.name,
                     email: buyer.email,
                     phoneNumber: buyer.phoneNumber,
