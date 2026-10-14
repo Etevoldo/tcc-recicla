@@ -6,8 +6,8 @@ import * as controller from "../controller/offersController.mjs"
 const router = express.Router();
 
 // basic crud
-router.get('/:BuyerId', controller.retrieveOffersByBuyer);
-router.get('/:ProductId', controller.retrieveOffersByProduct);
+router.get('/buyer/:BuyerId', controller.retrieveOffersByBuyer);
+router.get('/product/:ProductId', controller.retrieveOffersByProduct);
 router.get('/:BuyerId/:ProductId', controller.retrieveOffer);
 router.get('/', controller.retrieveOffers);
 
