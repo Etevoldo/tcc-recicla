@@ -6,7 +6,9 @@ const Address = db.address;
 
 export async function retrieveAllBuyers(req, res) {
     try {
-        const buyers = await Buyer.findAll();
+        const buyers = await Buyer.findAll(
+            { attributes: { exclude: ['createdAt','updatedAt']} }
+        );
         return res.status(200).send(JSON.stringify(buyers));
     } catch (error) {
         console.error(error);
@@ -16,15 +18,11 @@ export async function retrieveAllBuyers(req, res) {
 
 export async function retrieveBuyer(req, res) {
     try {
-        const buyer = await Buyer.findByPk(req.params.id);
-        return res.status(200).send({
-            name: buyer.name,
-            email: buyer.email,
-            phoneNumber: buyer.phoneNumber,
-            cep: buyer.cep,
-            address: buyer.address,
-            addressNumber: buyer.addressNumber,
-        });
+        const buyer = await Buyer.findByPk(
+            req.params.id,
+            { attributes: { exclude: ['createdAt','updatedAt']} }
+        );
+        return res.status(200).json(buyer);
 
     } catch (error) {
         console.error(error);
@@ -34,9 +32,11 @@ export async function retrieveBuyer(req, res) {
 
 export async function retrieveBuyerProducts(req, res) {
     try {
-        const buyer = await Buyer.findByPk(
-            req.params.id,
-        );
+        const buyer = await Buyer.findByPk(req.params.id);
+
+        if (buyer === null) {
+            return res.status(404).send({ message: 'Comprador não encontrado'});
+        }
 
         const products = await buyer.getProducts(
             { attributes: { exclude: ['createdAt','updatedAt']} }
@@ -53,15 +53,7 @@ export async function retrieveBuyerProducts(req, res) {
 export async function createBuyer(req, res) {
     //TODO checking if body is in right format
     try {
-        const insertedBuyer = await Buyer.create({
-            name: req.body.name,
-            cpf: req.body.cpf,
-            email: req.body.email,
-            phoneNumber: req.body.phoneNumber,
-            cep: req.body.cep,
-            address: req.body.address,
-            addressNumber: req.body.addressNumber,
-        });
+        const insertedBuyer = await Buyer.create(req.body);
 
         const address = await Address.findByPk(insertedBuyer.cep);
 
@@ -80,16 +72,7 @@ export async function createBuyer(req, res) {
             }
         }
 
-        res.status(200).send({
-            id: insertedBuyer.id,
-            name: insertedBuyer.name,
-            cpf: insertedBuyer.cpf,
-            email: insertedBuyer.email,
-            phoneNumber: insertedBuyer.phoneNumber,
-            cep: insertedBuyer.cep,
-            address: insertedBuyer.address,
-            addressNumber: insertedBuyer.addressNumber
-        });
+        res.status(200).json(insertedBuyer);
     } catch (error) {
         console.error(error);
         return res.status(403).send({ 
@@ -102,11 +85,7 @@ export async function updateBuyer(req, res) {
     try {
         await Buyer.update(
             req.body,
-            {
-                where: {
-                    id: req.params.id,
-                },
-            },
+            { where: { id: req.params.id } },
         );
 
         res.status(200).send();
