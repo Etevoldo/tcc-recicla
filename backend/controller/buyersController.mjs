@@ -99,10 +99,31 @@ export async function createBuyer(req, res) {
 }
 
 export async function updateBuyer(req, res) {
-    res.send('Hello world!\n');
+    try {
+        await Buyer.update(
+            req.body,
+            {
+                where: {
+                    id: req.params.id,
+                },
+            },
+        );
+
+        res.status(200).send();
+    } catch (error) {
+        console.error(error);
+        return res.status(404).send({ message: 'Comprador Não encontrado'});
+    }
     return;
 }
 
 export async function deleteBuyer(req, res) {
-    return;
+    try {
+        await Buyer.destroy({ where: { id: req.params.id }});
+
+        res.status(204).send();
+    } catch (error) {
+        console.error(error);
+        return res.status(404).send({ message: 'Comprador Não encontrado'});
+    }
 }
