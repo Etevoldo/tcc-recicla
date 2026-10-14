@@ -12,7 +12,7 @@ router.get('/:id/products', controller.retrieveBuyerProducts);
 router.get('/:id', controller.retrieveBuyer);
 router.post('/', controller.createBuyer);
 router.put('/:id', controller.updateBuyer);
-router.delete('/', controller.deleteBuyer);
+router.delete('/:id', controller.deleteBuyer);
 
 
 export { router as buyers };
