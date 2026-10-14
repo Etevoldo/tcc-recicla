@@ -12,6 +12,7 @@ function offerModel(sequelize, product, buyer) {
         },
         {
             sequelize,
+            timestamps: false
         });
     return Offer;
 }
