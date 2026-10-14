@@ -73,7 +73,7 @@ export async function deleteProduct(req, res) {
     try {
         await Product.destroy({ where: { id: req.params.id }});
 
-        res.status(204);
+        res.status(204).send();
     } catch (error) {
         console.error(error);
         return res.status(404).send({ message: 'Produto Não encontrado'});
