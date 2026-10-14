@@ -9,7 +9,8 @@ export async function insertTestData() {
         await db.sequelize.sync({force: true});
         await insertTestBuyers();
         await insertTestProducts();
-        await insertTestOffers()
+        await insertTestOffers();
+        await insertTestAddresses();
     } catch (error) {
         console.log(error);
     }
@@ -222,5 +223,60 @@ async function insertTestProducts() {
             "name": "Papel Machê",
             "recicling_code": "AZUL"
         },
+    ]);
+}
+
+async function insertTestAddresses() {
+    await db.address.bulkCreate([
+		{
+			"cep": "65047030",
+			"latitude": -2.5587351,
+			"longitude": -44.2368089
+		},
+		{
+			"cep": "65065500",
+			"latitude": -2.4887483,
+			"longitude": -44.233146
+		},
+		{
+			"cep": "65911190",
+			"latitude": -5.5128827,
+			"longitude": -47.4897919
+		},
+		{
+			"cep": "76870416",
+			"latitude": -9.9332992,
+			"longitude": -63.0164922
+		},
+		{
+			"cep": "76873004",
+			"latitude": -9.922642,
+			"longitude": -63.0285216
+		},
+		{
+			"cep": "76874174",
+			"latitude": -9.8916286,
+			"longitude": -63.0294187
+		},
+		{
+			"cep": "76875899",
+			"latitude": -9.9208265,
+			"longitude": -63.0319423
+		},
+		{
+			"cep": "76876344",
+			"latitude": -9.9311433,
+			"longitude": -63.0334847
+		},
+		{
+			"cep": "76906609",
+			"latitude": -10.8558274,
+			"longitude": -61.9517223
+		},
+		{
+			"cep": "76963512",
+			"latitude": -11.4267484,
+			"longitude": -61.4453186
+		}
     ]);
 }
