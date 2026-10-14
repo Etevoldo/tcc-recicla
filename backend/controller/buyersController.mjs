@@ -4,6 +4,16 @@ import { db } from "../models/init_models.mjs"
 const Buyer = db.buyer;
 const Address = db.address;
 
+export async function retrieveAllBuyers(req, res) {
+    try {
+        const buyers = await Buyer.findAll();
+        return res.status(200).send(JSON.stringify(buyers));
+    } catch (error) {
+        console.error(error);
+        return res.status(404).send({ message: 'Comprador não encontrado'});
+    }
+}
+
 export async function retrieveBuyer(req, res) {
     try {
         const buyer = await Buyer.findByPk(req.params.id);
