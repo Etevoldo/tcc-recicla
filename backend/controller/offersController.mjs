@@ -7,6 +7,10 @@ export async function retrieveOffers(req, res) {
     try {
         const offers = await Offer.findAll();
 
+        if (offers.length === 0) {
+            return res.status(404).send({ message: 'Ofertas não encontradas'});
+        }
+
         return res.status(200).send(JSON.stringify(offers));
 
     } catch (error) {
@@ -27,6 +31,11 @@ export async function retrieveOffer(req, res) {
             }
         });
 
+        if (offer === null) {
+            return res.status(404).send({ message: 'Ofertas não encontradas'});
+        }
+
+
         return res.status(200).send({
             BuyerId: offer.BuyerId,
             ProductId: offer.ProductId,
@@ -45,6 +54,10 @@ export async function retrieveOffersByBuyer(req, res) {
         const buyer = await db.buyer.findByPk(req.params.BuyerId);
         const offers = await buyer.getOffers();
 
+        if (offers.length === 0) {
+            return res.status(404).send({ message: 'Ofertas não encontradas'});
+        }
+
         res.status(200).send(JSON.stringify(offers));
 
     } catch (error) {
@@ -57,6 +70,10 @@ export async function retrieveOffersByProduct(req, res) {
     try {
         const product = await db.product.findByPk(req.params.ProductId);
         const offers = await product.getOffers();
+
+        if (offers.length === 0) {
+            return res.status(404).send({ message: 'Ofertas não encontradas'});
+        }
 
         res.status(200).send(JSON.stringify(offers));
 
@@ -101,6 +118,11 @@ export async function updateOffer(req, res) {
         );
 
         const updatedOffer = await Offer.findOne({ where: whereClause });
+
+        if (updatedOffer === null) {
+            return res.status(404).send({ message: 'Ofertas não encontradas'});
+        }
+
         res.status(200).send(JSON.stringify(updatedOffer));
 
     } catch (error) {
@@ -113,12 +135,19 @@ export async function deleteBuyerOffers(req, res) {
     try {
         const BuyerId = req.params.BuyerId;
 
-        await Offer.destroy({ where: { BuyerId: BuyerId } });
+        const deletedCount = await Offer.destroy(
+            { where: { BuyerId: BuyerId } }
+        );
+
+        if (deletedCount === 0) {
+            return res.status(404).send({ message: 'Ofertas não encontradas'});
+        }
+
         res.status(204).send();
 
     } catch (error) {
         console.error(error);
-        return res.status(404).send({ message: 'Oferta não encontrada'});
+        return res.status(404).send({ message: 'Comprador Não vende nada'});
     }
 }
 
@@ -127,7 +156,7 @@ export async function deleteOffer(req, res) {
         const BuyerId = req.params.BuyerId;
         const ProductId = req.params.ProductId;
 
-        await Offer.update(
+        const updatedCount = await Offer.update(
             { price: req.body.price },
             {
                 where: {
@@ -136,7 +165,12 @@ export async function deleteOffer(req, res) {
                 },
             },
         );
-        res.status(204).send;
+
+        if (updatedCount === 0) { 
+            return res.status(404).send({ message: 'Ofertas não encontradas'});
+        }
+
+        res.status(204).send();
 
     } catch (error) {
         console.error(error);
