@@ -1,22 +1,28 @@
-# Frontend Recicla — etapa 1
+# Frontend Recicla
 
-React + TypeScript + Vite + Tailwind CSS. Esta etapa contém a tela inicial e o formulário de CEP com máscara e validação de formato. Ainda não consulta a API nem valida a existência do CEP.
+React + TypeScript + Vite + Tailwind CSS. O frontend consome a API existente via proxy `/api` (sem alterar o backend): busca de compradores por CEP, detalhes com materiais e preços, e área de gestão.
 
 ## Docker (desenvolvimento)
 
-Na raiz do repositório:
+Na raiz do repositório, com backend e banco:
 
 ```sh
-docker compose up --build frontend
+docker compose up --build
 ```
 
-Abra http://localhost:5173. O frontend inicia sozinho, sem depender do backend ou banco. O código usa bind mount e o Vite usa polling para atualizar no WSL. As dependências ficam em volume próprio; `npm ci` na inicialização mantém esse volume sincronizado com o lockfile e requer acesso ao registro npm.
+Abra http://localhost:5173. O Vite encaminha `/api` para `http://backend:3000`.
 
-É necessário Docker com Compose disponível na distribuição WSL. Esta imagem é apenas para desenvolvimento.
+Para dados de teste no backend:
+
+```sh
+docker compose exec backend npm run testData
+```
+
+Um CEP com compradores de exemplo é `05424-020`.
 
 ## Sem Docker
 
-Use Node 22.12+ (ou Node 20.19+):
+Use Node 22.12+ (ou Node 20.19+). O proxy aponta para `http://localhost:3002` por padrão.
 
 ```sh
 cd frontend
@@ -31,5 +37,3 @@ npm run typecheck
 npm test
 npm run build
 ```
-
-As pastas ainda vazias estão reservadas para etapas futuras. Próxima etapa: integrar a busca por CEP e apresentar vendedores, após alinhar os endpoints disponíveis com o responsável pela API. Nenhum arquivo do backend foi alterado.
