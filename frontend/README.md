@@ -1,6 +1,6 @@
 # Frontend Recicla
 
-React + TypeScript + Vite + Tailwind CSS. O frontend consome a API existente via proxy `/api` (sem alterar o backend): busca de compradores por CEP, detalhes com materiais e preços, e área de gestão.
+React + TypeScript + Vite + Tailwind CSS. O frontend consome a API via proxy `/api`: busca pública de compradores por CEP, detalhes com materiais e preços, e área de gestão autenticada (admin e comprador).
 
 ## Docker (desenvolvimento)
 
@@ -18,7 +18,14 @@ Para dados de teste no backend:
 docker compose exec backend npm run testData
 ```
 
+Credenciais de teste:
+
+- Admin: `admin@recicla.com` / `admin123`
+- Comprador (exemplo): `ana.silva@email.com` / `comprador123` — a mesma senha vale para os outros e-mails de comprador.
+
 Um CEP com compradores de exemplo é `05424-020`.
+
+Usuários criados pelo admin precisam trocar a senha no primeiro acesso (`/trocar-senha`). Os usuários do `testData` já entram direto na gestão.
 
 ## Sem Docker
 

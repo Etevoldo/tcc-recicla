@@ -1,10 +1,12 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
 import { cn } from '../../lib/cn'
+import { useAuth } from '../../features/auth/AuthContext'
 
 export function AppLayout() {
   const location = useLocation()
+  const { user, logout } = useAuth()
   const isHome = location.pathname === '/'
-  const isAdmin = location.pathname.startsWith('/gestao')
+  const isGestao = location.pathname.startsWith('/gestao') || location.pathname === '/login'
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -14,18 +16,37 @@ export function AppLayout() {
             recicla<span className="text-green-600">.</span>
           </Link>
           <nav className="flex items-center gap-4 text-sm">
-            <span className="hidden text-right text-xs text-stone-500 sm:inline sm:text-sm">
-              Conectando novos ciclos
-            </span>
-            <Link
-              to="/gestao/compradores"
-              className={cn(
-                'font-semibold text-green-800 hover:text-green-950',
-                isAdmin && 'underline decoration-2 underline-offset-4',
-              )}
-            >
-              Gestão
-            </Link>
+            {user ? (
+              <>
+                <span className="hidden text-stone-500 sm:inline">{user.name || user.email}</span>
+                <Link
+                  to="/gestao"
+                  className={cn(
+                    'font-semibold text-green-800 hover:text-green-950',
+                    isGestao && 'underline decoration-2 underline-offset-4',
+                  )}
+                >
+                  Gestão
+                </Link>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="font-semibold text-stone-600 hover:text-stone-900"
+                >
+                  Sair
+                </button>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                className={cn(
+                  'font-semibold text-green-800 hover:text-green-950',
+                  isGestao && 'underline decoration-2 underline-offset-4',
+                )}
+              >
+                Gestão
+              </Link>
+            )}
           </nav>
         </div>
       </header>

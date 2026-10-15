@@ -7,6 +7,8 @@ import { buyers } from './routes/buyer.mjs'
 import { addresses } from './routes/addresses.mjs'
 import { products } from './routes/product.mjs'
 import { offers } from './routes/offer.mjs'
+import { auth } from './routes/auth.mjs'
+import { users } from './routes/users.mjs'
 import morgan from 'morgan'
 
 dotenv.config();
@@ -14,6 +16,8 @@ const app = express();
 
 app.use(express.json());
 app.use(morgan('tiny'));
+app.use('/auth', auth);
+app.use('/users', users);
 app.use('/buyers', buyers);
 app.use('/addresses', addresses);
 app.use('/products', products);

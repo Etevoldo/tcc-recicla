@@ -1,19 +1,20 @@
 import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Button } from '../../../components/ui/Button'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { ErrorState } from '../../../components/ui/ErrorState'
+import { Modal } from '../../../components/ui/Modal'
 import { Spinner } from '../../../components/ui/Spinner'
+import { formatPrice } from '../../../lib/format'
 import { getRecyclingCode } from '../../buyers/constants/recyclingCodes'
-import { createProduct, deleteProduct, getProducts, updateProduct } from '../../buyers/services/productsApi'
+import { deleteProduct, getProducts, updateProduct } from '../../buyers/services/productsApi'
 import type { Product, ProductInput } from '../../buyers/types'
+import { productPrice } from '../../buyers/types'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { ProductForm } from '../components/ProductForm'
 
 export function ProductsAdminPage() {
   const queryClient = useQueryClient()
   const [editing, setEditing] = useState<Product | null>(null)
-  const [creating, setCreating] = useState(false)
   const [pendingId, setPendingId] = useState<number | null>(null)
 
   const query = useQuery({ queryKey: ['products'], queryFn: getProducts })
@@ -22,13 +23,6 @@ export function ProductsAdminPage() {
     await queryClient.invalidateQueries({ queryKey: ['products'] })
   }
 
-  const createMutation = useMutation({
-    mutationFn: createProduct,
-    onSuccess: async () => {
-      setCreating(false)
-      await invalidate()
-    },
-  })
   const updateMutation = useMutation({
     mutationFn: ({ id, input }: { id: number; input: ProductInput }) => updateProduct(id, input),
     onSuccess: async () => {
@@ -51,36 +45,7 @@ export function ProductsAdminPage() {
 
   return (
     <section className="grid gap-6">
-      <div className="flex items-center justify-between gap-4">
-        <h2 className="text-xl font-bold text-green-950">Produtos</h2>
-        {!creating && !editing && (
-          <Button type="button" onClick={() => setCreating(true)}>
-            Novo produto
-          </Button>
-        )}
-      </div>
-
-      {(creating || editing) && (
-        <div className="rounded-3xl border border-stone-200 bg-white p-6">
-          <h3 className="mb-4 font-bold text-green-950">
-            {editing ? 'Editar produto' : 'Novo produto'}
-          </h3>
-          <ProductForm
-            key={editing?.id ?? 'new'}
-            initial={editing ?? undefined}
-            submitLabel={editing ? 'Salvar alterações' : 'Cadastrar'}
-            busy={createMutation.isPending || updateMutation.isPending}
-            onCancel={() => {
-              setCreating(false)
-              setEditing(null)
-            }}
-            onSubmit={(input) => {
-              if (editing) updateMutation.mutate({ id: editing.id, input })
-              else createMutation.mutate(input)
-            }}
-          />
-        </div>
-      )}
+      <h2 className="text-xl font-bold text-green-950">Produtos</h2>
 
       {products.length === 0 ? (
         <EmptyState title="Nenhum produto cadastrado" />
@@ -89,27 +54,29 @@ export function ProductsAdminPage() {
           <table className="min-w-full text-left text-sm">
             <thead>
               <tr className="border-b border-stone-200 text-stone-500">
-                <th className="px-4 py-3 font-semibold">Nome</th>
-                <th className="px-4 py-3 font-semibold">Código</th>
+                <th className="px-4 py-3 font-semibold">Produto</th>
+                <th className="px-4 py-3 font-semibold">Tipo</th>
+                <th className="px-4 py-3 font-semibold">Comprador</th>
+                <th className="px-4 py-3 font-semibold">Preço</th>
                 <th className="px-4 py-3 font-semibold">Ações</th>
               </tr>
             </thead>
             <tbody>
               {products.map((product) => {
                 const info = getRecyclingCode(product.recicling_code)
+                const price = productPrice(product)
                 return (
                   <tr key={product.id} className="border-b border-stone-100">
                     <td className="px-4 py-3 font-medium text-green-950">{product.name}</td>
                     <td className="px-4 py-3">{info.label}</td>
+                    <td className="px-4 py-3">{product.owner?.name ?? '—'}</td>
+                    <td className="px-4 py-3">{price != null ? formatPrice(price) : '—'}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-3">
                         <button
                           type="button"
                           className="font-semibold text-green-800"
-                          onClick={() => {
-                            setCreating(false)
-                            setEditing(product)
-                          }}
+                          onClick={() => setEditing(product)}
                         >
                           Editar
                         </button>
@@ -130,10 +97,23 @@ export function ProductsAdminPage() {
         </div>
       )}
 
+      <Modal open={editing != null} title="Editar produto" onClose={() => setEditing(null)}>
+        {editing && (
+          <ProductForm
+            key={editing.id}
+            initial={editing}
+            submitLabel="Salvar alterações"
+            busy={updateMutation.isPending}
+            onCancel={() => setEditing(null)}
+            onSubmit={(input) => updateMutation.mutate({ id: editing.id, input })}
+          />
+        )}
+      </Modal>
+
       <ConfirmDialog
         open={pendingId != null}
         title="Excluir produto"
-        message="Deseja excluir este produto? Ofertas associadas podem ser afetadas."
+        message="Deseja excluir este produto?"
         confirmLabel="Excluir"
         danger
         busy={deleteMutation.isPending}

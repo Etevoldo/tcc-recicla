@@ -35,10 +35,18 @@ export type OfferNested = {
   ProductId?: number
 }
 
+export type ProductOwner = {
+  id: number
+  name: string
+}
+
 export type Product = {
   id: number
   name: string
   recicling_code: RecyclingCode
+  ownerId?: number | null
+  owner?: ProductOwner | null
+  price?: number | null
   Offer?: OfferNested
 }
 
@@ -53,6 +61,7 @@ export type BuyerInput = Omit<Buyer, 'id'>
 export type ProductInput = {
   name: string
   recicling_code: RecyclingCode
+  price: number
 }
 
 export type BuyerWithProducts = Buyer & {
@@ -65,6 +74,7 @@ export type SearchResult = {
 }
 
 export function productPrice(product: Product): number | undefined {
-  const price = product.Offer?.price
-  return typeof price === 'number' ? price : undefined
+  if (typeof product.price === 'number') return product.price
+  const nested = product.Offer?.price
+  return typeof nested === 'number' ? nested : undefined
 }

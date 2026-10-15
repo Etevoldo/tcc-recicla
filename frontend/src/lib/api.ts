@@ -10,6 +10,17 @@ export class ApiError extends Error {
 
 const BASE = '/api'
 
+let authToken: string | null = null
+let onUnauthorized: (() => void) | null = null
+
+export function setAuthToken(token: string | null): void {
+  authToken = token
+}
+
+export function setOnUnauthorized(callback: (() => void) | null): void {
+  onUnauthorized = callback
+}
+
 async function parseBody(response: Response): Promise<unknown> {
   const text = await response.text()
   if (!text) return null
@@ -34,11 +45,16 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
     ...init,
     headers: {
       ...(hasBody ? { 'Content-Type': 'application/json' } : {}),
+      ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
       ...init?.headers,
     },
   })
 
   const body = await parseBody(response)
+
+  if (response.status === 401) {
+    onUnauthorized?.()
+  }
 
   if (!response.ok) {
     const fallback =

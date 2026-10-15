@@ -44,6 +44,8 @@ services:
       - DB_PASSWORD=secret
       - DB_HOST=db
       - DB_PORT=3306
+      - JWT_SECRET=dev-secret-recicla
+      - JWT_EXPIRES_IN=8h
     ports:
       - 3002:3000
       - 9229:9229

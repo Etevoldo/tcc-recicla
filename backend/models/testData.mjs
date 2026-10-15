@@ -1,5 +1,6 @@
 'use strict';
 
+import bcrypt from 'bcryptjs'
 import { db } from "./init_models.mjs"
 
 insertTestData();
@@ -8,56 +9,38 @@ export async function insertTestData() {
     try {
         await db.sequelize.sync({force: true});
         await insertTestBuyers();
-        await insertTestProducts();
-        await insertTestOffers();
+        await insertTestUsers();
+        await insertTestProductsAndOffers();
         await insertTestAddresses();
     } catch (error) {
         console.log(error);
     }
 }
 
-async function insertTestOffers() {
-    await db.offer.bulkCreate([
-        // Produto 1 (PET): 4 ofertas, preços variados
-        { price: 150, ProductId: 1, BuyerId: 1 },
-        { price: 145, ProductId: 1, BuyerId: 2 },
-        { price: 160, ProductId: 1, BuyerId: 5 },
-        { price: 155, ProductId: 1, BuyerId: 11 },
-        // Produto 2 (Papelão): 3 ofertas
-        { price: 80, ProductId: 2, BuyerId: 2 },
-        { price: 75, ProductId: 2, BuyerId: 3 },
-        { price: 85, ProductId: 2, BuyerId: 14 },
-        // Produto 3 (Vidro): 2 ofertas
-        { price: 50, ProductId: 3, BuyerId: 4 },
-        { price: 55, ProductId: 3, BuyerId: 6 },
-        // Produto 4 (Alumínio): 5 ofertas, preços próximos
-        { price: 300, ProductId: 4, BuyerId: 1 },
-        { price: 305, ProductId: 4, BuyerId: 3 },
-        { price: 298, ProductId: 4, BuyerId: 7 },
-        { price: 310, ProductId: 4, BuyerId: 9 },
-        { price: 295, ProductId: 4, BuyerId: 17 },
-        // Produto 5 (Cerragem): 1 oferta (única)
-        { price: 20, ProductId: 5, BuyerId: 8 },
-        // Produto 6 (Bagaço): 2 ofertas
-        { price: 30, ProductId: 6, BuyerId: 10 },
-        { price: 35, ProductId: 6, BuyerId: 12 },
-        // Produto 7 (Galão): 1 oferta (única)
-        { price: 100, ProductId: 7, BuyerId: 13 },
-        // Produto 8 (PVC): 3 ofertas
-        { price: 200, ProductId: 8, BuyerId: 15 },
-        { price: 210, ProductId: 8, BuyerId: 16 },
-        { price: 195, ProductId: 8, BuyerId: 18 },
-        // Produto 9 (Tampinha): 1 oferta (única)
-        { price: 10, ProductId: 9, BuyerId: 19 },
-        // Produto 10 (Balde): 2 ofertas
-        { price: 120, ProductId: 10, BuyerId: 20 },
-        { price: 125, ProductId: 10, BuyerId: 21 },
-        // Produto 11 (Face-shield): 1 oferta (única)
-        { price: 70, ProductId: 11, BuyerId: 2 },
-        // Produto 12 (Caderno): 2 ofertas
-        { price: 40, ProductId: 12, BuyerId: 4 },
-        { price: 45, ProductId: 12, BuyerId: 6 },
-    ]);
+async function insertTestUsers() {
+    const passwordHash = await bcrypt.hash('comprador123', 10)
+    const adminHash = await bcrypt.hash('admin123', 10)
+    const buyers = await db.buyer.findAll({ order: [['id', 'ASC']] })
+
+    await db.user.create({
+        name: 'Administrador',
+        email: 'admin@recicla.com',
+        passwordHash: adminHash,
+        role: 'ADMIN',
+        BuyerId: null,
+        mustChangePassword: false,
+    })
+
+    await db.user.bulkCreate(
+        buyers.map((buyer) => ({
+            name: buyer.name,
+            email: String(buyer.email).toLowerCase(),
+            passwordHash,
+            role: 'BUYER',
+            BuyerId: buyer.id,
+            mustChangePassword: false,
+        }))
+    )
 }
 
 async function insertTestBuyers() {
@@ -92,27 +75,85 @@ async function insertTestBuyers() {
     ]);
 }
 
-async function insertTestProducts() {
-    await db.product.bulkCreate([
-        { id: 1, name: "Garrafa PET", recicling_code: "PET" },
-        { id: 2, name: "Papelão", recicling_code: "AZUL" },
-        { id: 3, name: "Garrafa de Vidro", recicling_code: "VERDE" },
-        { id: 4, name: "Lata de Alumínio", recicling_code: "AMARELO" },
-        { id: 5, name: "Cerragem", recicling_code: "PRETO" },
-        { id: 6, name: "Bagaço de Cana", recicling_code: "MARROM" },
-        { id: 7, name: "Galão de Plástico", recicling_code: "PEAD" },
-        { id: 8, name: "Cano PVC", recicling_code: "PVC" },
-        { id: 9, name: "Tampinha de Garrafa", recicling_code: "PEBD" },
-        { id: 10, name: "Balde Velho", recicling_code: "PP" },
-        { id: 11, name: "Face-shield", recicling_code: "PS" },
-        { id: 12, name: "Caderno Usado", recicling_code: "AZUL" },
-        // Produtos SEM OFERTAS (para testes de borda)
-        { id: 13, name: "Papel Machê", recicling_code: "AZUL" },
-        { id: 14, name: "Vidro Temperado", recicling_code: "VERDE" },
-        { id: 15, name: "Latinha Amassada", recicling_code: "AMARELO" },
-        { id: 16, name: "Serragem Fina", recicling_code: "PRETO" },
-        { id: 17, name: "Palha de Cana", recicling_code: "MARROM" },
-    ]);
+async function insertTestProductsAndOffers() {
+    const catalog = [
+        { name: "Garrafa PET", recicling_code: "PET" },
+        { name: "Papelão", recicling_code: "AZUL" },
+        { name: "Garrafa de Vidro", recicling_code: "VERDE" },
+        { name: "Lata de Alumínio", recicling_code: "AMARELO" },
+        { name: "Cerragem", recicling_code: "PRETO" },
+        { name: "Bagaço de Cana", recicling_code: "MARROM" },
+        { name: "Galão de Plástico", recicling_code: "PEAD" },
+        { name: "Cano PVC", recicling_code: "PVC" },
+        { name: "Tampinha de Garrafa", recicling_code: "PEBD" },
+        { name: "Balde Velho", recicling_code: "PP" },
+        { name: "Face-shield", recicling_code: "PS" },
+        { name: "Caderno Usado", recicling_code: "AZUL" },
+    ]
+    const offerSeeds = [
+        { catalog: 0, buyerId: 1, price: 150 },
+        { catalog: 0, buyerId: 2, price: 145 },
+        { catalog: 0, buyerId: 5, price: 160 },
+        { catalog: 0, buyerId: 11, price: 155 },
+        { catalog: 1, buyerId: 2, price: 80 },
+        { catalog: 1, buyerId: 3, price: 75 },
+        { catalog: 1, buyerId: 14, price: 85 },
+        { catalog: 2, buyerId: 4, price: 50 },
+        { catalog: 2, buyerId: 6, price: 55 },
+        { catalog: 3, buyerId: 1, price: 300 },
+        { catalog: 3, buyerId: 3, price: 305 },
+        { catalog: 3, buyerId: 7, price: 298 },
+        { catalog: 3, buyerId: 9, price: 310 },
+        { catalog: 3, buyerId: 17, price: 295 },
+        { catalog: 4, buyerId: 8, price: 20 },
+        { catalog: 5, buyerId: 10, price: 30 },
+        { catalog: 5, buyerId: 12, price: 35 },
+        { catalog: 6, buyerId: 13, price: 100 },
+        { catalog: 7, buyerId: 15, price: 200 },
+        { catalog: 7, buyerId: 16, price: 210 },
+        { catalog: 7, buyerId: 18, price: 195 },
+        { catalog: 8, buyerId: 19, price: 10 },
+        { catalog: 9, buyerId: 20, price: 120 },
+        { catalog: 9, buyerId: 21, price: 125 },
+        { catalog: 10, buyerId: 2, price: 70 },
+        { catalog: 11, buyerId: 4, price: 40 },
+        { catalog: 11, buyerId: 6, price: 45 },
+    ]
+    const leftovers = [
+        { name: "Papel Machê", recicling_code: "AZUL", ownerId: 1, price: 40 },
+        { name: "Vidro Temperado", recicling_code: "VERDE", ownerId: 3, price: 55 },
+        { name: "Latinha Amassada", recicling_code: "AMARELO", ownerId: 7, price: 280 },
+        { name: "Serragem Fina", recicling_code: "PRETO", ownerId: 8, price: 25 },
+        { name: "Palha de Cana", recicling_code: "MARROM", ownerId: 10, price: 30 },
+    ]
+
+    const products = []
+    const offers = []
+    let id = 1
+    for (const seed of offerSeeds) {
+        const item = catalog[seed.catalog]
+        products.push({
+            id,
+            name: item.name,
+            recicling_code: item.recicling_code,
+            ownerId: seed.buyerId,
+        })
+        offers.push({ price: seed.price, ProductId: id, BuyerId: seed.buyerId })
+        id += 1
+    }
+    for (const item of leftovers) {
+        products.push({
+            id,
+            name: item.name,
+            recicling_code: item.recicling_code,
+            ownerId: item.ownerId,
+        })
+        offers.push({ price: item.price, ProductId: id, BuyerId: item.ownerId })
+        id += 1
+    }
+
+    await db.product.bulkCreate(products)
+    await db.offer.bulkCreate(offers)
 }
 
 async function insertTestAddresses() {

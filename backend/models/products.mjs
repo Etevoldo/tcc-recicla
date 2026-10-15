@@ -16,6 +16,10 @@ function productModel(sequelize) {
             // Codigos baseados no CONAMA nº 275 de 25/04/2001
             // Não usar código VERMELHO (plastico), visto que esse deve
             // Ser categorizado mais profundamente (PP)
+            ownerId: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
             recicling_code: DataTypes.ENUM(
                 'AZUL',    // Papel ou papelão
                 'VERDE',   // Vidro

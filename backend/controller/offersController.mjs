@@ -158,17 +158,14 @@ export async function deleteOffer(req, res) {
         const BuyerId = req.params.BuyerId;
         const ProductId = req.params.ProductId;
 
-        const updatedCount = await Offer.update(
-            { price: req.body.price },
-            {
-                where: {
-                    BuyerId: BuyerId,
-                    ProductId: ProductId
-                },
+        const deletedCount = await Offer.destroy({
+            where: {
+                BuyerId: BuyerId,
+                ProductId: ProductId
             },
-        );
+        });
 
-        if (updatedCount === 0) { 
+        if (deletedCount === 0) {
             return res.status(404).send({ message: 'Ofertas não encontradas'});
         }
 

@@ -22,20 +22,9 @@ export async function getBuyerProducts(id: number): Promise<Product[]> {
   }
 }
 
-export async function createBuyer(input: BuyerInput): Promise<Buyer> {
-  return api<Buyer>('/buyers', {
-    method: 'POST',
-    body: JSON.stringify(input),
-  })
-}
-
 export async function updateBuyer(id: number, input: BuyerInput): Promise<void> {
   await api<null>(`/buyers/${id}`, {
     method: 'PUT',
     body: JSON.stringify(input),
   })
-}
-
-export async function deleteBuyer(id: number): Promise<void> {
-  await api<null>(`/buyers/${id}`, { method: 'DELETE' })
 }

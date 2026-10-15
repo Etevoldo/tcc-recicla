@@ -4,6 +4,24 @@ import { db } from "../models/init_models.mjs"
 const Buyer = db.buyer;
 const Address = db.address;
 
+async function ensureAddress(cep) {
+    const normalized = String(cep || '').replace(/\D/g, '')
+    if (normalized.length !== 8) return
+
+    const address = await Address.findByPk(normalized)
+    if (address !== null) return
+
+    const response = await fetch(`https://cep.awesomeapi.com.br/json/${normalized}`)
+    const data = await response.json()
+    if (response.status === 200 && data.lat != null && data.lng != null) {
+        await Address.create({
+            cep: normalized,
+            latitude: parseFloat(data.lat),
+            longitude: parseFloat(data.lng),
+        })
+    }
+}
+
 export async function retrieveAllBuyers(req, res) {
     try {
         const buyers = await Buyer.findAll(
@@ -51,27 +69,13 @@ export async function retrieveBuyerProducts(req, res) {
 }
 
 export async function createBuyer(req, res) {
-    //TODO checking if body is in right format
     try {
-        const insertedBuyer = await Buyer.create(req.body);
-
-        const address = await Address.findByPk(insertedBuyer.cep);
-
-        // insert into addresses db if a new address
-        if (address === null) {
-            const response = await fetch(
-                `https://cep.awesomeapi.com.br/json/${insertedBuyer.cep}`);
-            const data = await response.json();
-
-            if (response.status === 200) {
-                await Address.create({
-                    cep: insertedBuyer.cep,
-                    latitude: parseFloat(data.lat),
-                    longitude: parseFloat(data.lng)
-                });
-            }
+        const body = { ...req.body }
+        if (body.cep) {
+            body.cep = String(body.cep).replace(/\D/g, '')
         }
-
+        const insertedBuyer = await Buyer.create(body);
+        await ensureAddress(insertedBuyer.cep)
         res.status(200).json(insertedBuyer);
     } catch (error) {
         console.error(error);
@@ -83,10 +87,17 @@ export async function createBuyer(req, res) {
 
 export async function updateBuyer(req, res) {
     try {
-        await Buyer.update(
-            req.body,
-            { where: { id: req.params.id } },
-        );
+        const buyer = await Buyer.findByPk(req.params.id)
+        if (buyer === null) {
+            return res.status(404).send({ message: 'Comprador Não encontrado'});
+        }
+
+        const body = { ...req.body }
+        if (body.cep != null) {
+            body.cep = String(body.cep).replace(/\D/g, '')
+        }
+        await buyer.update(body)
+        await ensureAddress(buyer.cep)
 
         res.status(200).send();
     } catch (error) {
