@@ -11,6 +11,7 @@ import { RadiusSelect } from './RadiusSelect'
 export function CepForm() {
   const navigate = useNavigate()
   const [cep, setCep] = useState('')
+  const [product, setProduct] = useState('')
   const [radius, setRadius] = useState<SearchRadiusKm>(15)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -23,7 +24,10 @@ export function CepForm() {
       return
     }
     setError('')
-    navigate(`/compradores?cep=${normalizeCep(cep)}&raio=${radius}`)
+    const params = new URLSearchParams({ cep: normalizeCep(cep), raio: String(radius) })
+    const productQuery = product.trim()
+    if (productQuery) params.set('produto', productQuery)
+    navigate(`/compradores?${params}`)
   }
 
   return (
@@ -32,7 +36,8 @@ export function CepForm() {
         <div>
           <h2 className="text-xl font-bold text-green-950">Comece pela sua região</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-600">
-            Informe o CEP onde deseja encontrar compradores de recicláveis.
+            Informe o CEP para achar compradores próximos. Se quiser, busque também um tipo de
+            produto.
           </p>
         </div>
         <Input
@@ -52,9 +57,19 @@ export function CepForm() {
             setError('')
           }}
         />
+        <Input
+          id="produto"
+          name="produto"
+          type="search"
+          placeholder="PET, papelão ou 12"
+          label="Produto (opcional)"
+          hint="Código de reciclagem, nome ou código do produto. Vazio lista todos os compradores próximos."
+          value={product}
+          onChange={(event) => setProduct(event.target.value)}
+        />
         <RadiusSelect value={radius} onChange={setRadius} />
         <Button type="submit" className="min-h-12 w-full text-base">
-          Buscar compradores <span aria-hidden="true" className="ml-2">→</span>
+          Buscar próximos <span aria-hidden="true" className="ml-2">→</span>
         </Button>
       </form>
     </Card>

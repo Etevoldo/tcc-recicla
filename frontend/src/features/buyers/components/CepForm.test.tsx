@@ -20,9 +20,27 @@ describe('CepForm', () => {
     )
 
     await user.type(screen.getByLabelText('Seu CEP'), '05424020')
-    await user.click(screen.getByRole('button', { name: /buscar compradores/i }))
+    await user.click(screen.getByRole('button', { name: /buscar próximos/i }))
 
     expect(screen.getByTestId('location').textContent).toBe('/compradores?cep=05424020&raio=15')
+  })
+
+  it('inclui o produto na busca quando informado', async () => {
+    const user = userEvent.setup()
+    render(
+      <MemoryRouter>
+        <CepForm />
+        <LocationDisplay />
+      </MemoryRouter>,
+    )
+
+    await user.type(screen.getByLabelText('Seu CEP'), '05424-020')
+    await user.type(screen.getByLabelText('Produto (opcional)'), 'PET')
+    await user.click(screen.getByRole('button', { name: /buscar próximos/i }))
+
+    expect(screen.getByTestId('location').textContent).toBe(
+      '/compradores?cep=05424020&raio=15&produto=PET',
+    )
   })
 
   it('mostra erro quando o CEP está incompleto', async () => {
@@ -36,7 +54,7 @@ describe('CepForm', () => {
     )
 
     await user.type(screen.getByLabelText('Seu CEP'), '05424')
-    await user.click(screen.getByRole('button', { name: /buscar compradores/i }))
+    await user.click(screen.getByRole('button', { name: /buscar próximos/i }))
 
     expect(screen.getByRole('alert').textContent).toBe('Informe os oito dígitos do CEP.')
   })

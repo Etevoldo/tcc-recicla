@@ -91,8 +91,91 @@ describe('ResultsPage', () => {
 
     await user.click(screen.getByRole('button', { name: 'PET' }))
     await waitFor(() => {
-      expect(screen.getByText('Ana Silva')).toBeTruthy()
+      expect(screen.getAllByText('Ana Silva').length).toBeGreaterThan(0)
       expect(screen.queryByText('Bruno Costa')).toBeNull()
     })
+  })
+
+  it('lista produtos próximos pelo código de reciclagem', async () => {
+    mockFetch(async (url) => {
+      if (url.includes('/addresses/searchBuyers/')) {
+        return new Response(
+          JSON.stringify({
+            compradoresProximos: [
+              { id: 1, name: 'Ana Silva', email: 'ana@email.com', phoneNumber: '11987654321', cep: '05424020', address: 'Rua A', addressNumber: '100' },
+              { id: 2, name: 'Bruno Costa', email: 'bruno@email.com', phoneNumber: '21976543210', cep: '05424020', address: 'Rua B', addressNumber: '200' },
+            ],
+            raio: '15Km',
+          }),
+          { status: 200 },
+        )
+      }
+      if (url.includes('/buyers/1/products')) {
+        return new Response(
+          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', Offer: { price: 150 } }]),
+          { status: 200 },
+        )
+      }
+      if (url.includes('/buyers/2/products')) {
+        return new Response(
+          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', Offer: { price: 80 } }]),
+          { status: 200 },
+        )
+      }
+      return new Response('not found', { status: 404 })
+    })
+
+    render(<ResultsPage />, {
+      wrapper: ({ children }) =>
+        wrapper({ children, path: '/compradores?cep=05424020&raio=15&produto=PET' }),
+    })
+
+    expect(await screen.findByText('Produtos próximos')).toBeTruthy()
+    expect(screen.getByText('Garrafa PET')).toBeTruthy()
+    expect(screen.getByText('Código 1')).toBeTruthy()
+    expect(screen.queryByText('Papelão')).toBeNull()
+    expect(screen.getAllByText('Ana Silva').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Bruno Costa')).toBeNull()
+  })
+
+  it('lista produtos próximos pelo código do produto', async () => {
+    mockFetch(async (url) => {
+      if (url.includes('/addresses/searchBuyers/')) {
+        return new Response(
+          JSON.stringify({
+            compradoresProximos: [
+              { id: 1, name: 'Ana Silva', email: 'ana@email.com', phoneNumber: '11987654321', cep: '05424020', address: 'Rua A', addressNumber: '100' },
+              { id: 2, name: 'Bruno Costa', email: 'bruno@email.com', phoneNumber: '21976543210', cep: '05424020', address: 'Rua B', addressNumber: '200' },
+            ],
+            raio: '15Km',
+          }),
+          { status: 200 },
+        )
+      }
+      if (url.includes('/buyers/1/products')) {
+        return new Response(
+          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', Offer: { price: 150 } }]),
+          { status: 200 },
+        )
+      }
+      if (url.includes('/buyers/2/products')) {
+        return new Response(
+          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', Offer: { price: 80 } }]),
+          { status: 200 },
+        )
+      }
+      return new Response('not found', { status: 404 })
+    })
+
+    render(<ResultsPage />, {
+      wrapper: ({ children }) =>
+        wrapper({ children, path: '/compradores?cep=05424020&raio=15&produto=2' }),
+    })
+
+    expect(await screen.findByText('Papelão')).toBeTruthy()
+    expect(screen.getByText('Código 2')).toBeTruthy()
+    expect(screen.queryByText('Garrafa PET')).toBeNull()
+    expect(screen.getAllByText('Bruno Costa').length).toBeGreaterThan(0)
+    expect(screen.queryByText('Ana Silva')).toBeNull()
   })
 })

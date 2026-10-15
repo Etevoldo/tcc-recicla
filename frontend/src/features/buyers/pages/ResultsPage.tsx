@@ -7,8 +7,10 @@ import { Spinner } from '../../../components/ui/Spinner'
 import { ApiError } from '../../../lib/api'
 import { BuyerCard } from '../components/BuyerCard'
 import { MaterialFilter } from '../components/MaterialFilter'
+import { NearbyProductCard } from '../components/NearbyProductCard'
 import { RadiusSelect } from '../components/RadiusSelect'
 import { formatCep, isValidCep, normalizeCep } from '../services/cep'
+import { filterBuyersByProduct, nearbyProductMatches } from '../services/productSearch'
 import { parseRadiusKm, searchNearbyBuyers } from '../services/searchApi'
 import type { RecyclingCode } from '../types'
 
@@ -16,6 +18,7 @@ export function ResultsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
   const cep = normalizeCep(searchParams.get('cep') ?? '')
   const radius = parseRadiusKm(searchParams.get('raio'))
+  const productQuery = searchParams.get('produto') ?? ''
   const [material, setMaterial] = useState<RecyclingCode | 'ALL'>('ALL')
 
   const query = useQuery({
@@ -32,19 +35,26 @@ export function ResultsPage() {
     return [...codes]
   }, [query.data])
 
-  const filteredBuyers = useMemo(() => {
-    const buyers = query.data?.buyers ?? []
-    if (material === 'ALL') return buyers
-    return buyers.filter((buyer) =>
-      buyer.products.some((product) => product.recicling_code === material),
-    )
-  }, [material, query.data])
+  const filteredBuyers = useMemo(
+    () => filterBuyersByProduct(query.data?.buyers ?? [], material, productQuery),
+    [material, productQuery, query.data],
+  )
+  const productMatches = useMemo(() => nearbyProductMatches(filteredBuyers), [filteredBuyers])
+  const hasProductFilter = productQuery.trim() !== '' || material !== 'ALL'
+
+  function replaceParams(nextRadius: string) {
+    const params = new URLSearchParams()
+    params.set('cep', cep)
+    params.set('raio', nextRadius)
+    if (productQuery.trim()) params.set('produto', productQuery.trim())
+    setSearchParams(params)
+  }
 
   if (!isValidCep(cep)) {
     return (
       <EmptyState
         title="Informe um CEP para buscar"
-        description="A busca de compradores começa pelo CEP da sua região."
+        description="A busca de compradores e produtos começa pelo CEP da sua região."
         action={
           <Link to="/" className="font-semibold text-green-800 hover:text-green-950">
             Voltar para a busca
@@ -60,11 +70,13 @@ export function ResultsPage() {
         <div>
           <p className="text-xs font-bold uppercase tracking-widest text-green-700">Resultados</p>
           <h1 className="mt-2 text-3xl font-bold text-green-950">
-            Compradores próximos ao CEP {formatCep(cep)}
+            {hasProductFilter ? 'Produtos e compradores' : 'Compradores'} próximos ao CEP{' '}
+            {formatCep(cep)}
           </h1>
           {query.data && (
             <p className="mt-2 text-sm text-stone-600">
-              {query.data.buyers.length} comprador(es) no raio de {query.data.radiusLabel}.
+              {query.data.buyers.length} comprador(es) no raio de {query.data.radiusLabel}
+              {hasProductFilter ? ` · ${productMatches.length} produto(s) encontrado(s)` : ''}.
             </p>
           )}
         </div>
@@ -73,7 +85,7 @@ export function ResultsPage() {
             value={radius}
             onChange={(next) => {
               setMaterial('ALL')
-              setSearchParams({ cep, raio: String(next) })
+              replaceParams(String(next))
             }}
           />
         </div>
@@ -111,14 +123,29 @@ export function ResultsPage() {
           <MaterialFilter codes={availableCodes} value={material} onChange={setMaterial} />
           {filteredBuyers.length === 0 ? (
             <EmptyState
-              title="Nenhum comprador para este material"
-              description="Limpe o filtro ou escolha outro tipo de reciclável."
+              title={hasProductFilter ? 'Nenhum produto próximo com esse tipo ou código' : 'Nenhum comprador para este material'}
+              description="Limpe o filtro, escolha outro tipo de reciclável ou busque por outro código."
             />
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {filteredBuyers.map((buyer) => (
-                <BuyerCard key={buyer.id} buyer={buyer} />
-              ))}
+            <div className="grid gap-10">
+              {hasProductFilter && productMatches.length > 0 && (
+                <section className="grid gap-4">
+                  <h2 className="text-lg font-bold text-green-950">Produtos próximos</h2>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {productMatches.map(({ product, buyer }) => (
+                      <NearbyProductCard key={`${buyer.id}-${product.id}`} product={product} buyer={buyer} />
+                    ))}
+                  </div>
+                </section>
+              )}
+              <section className="grid gap-4">
+                {hasProductFilter && <h2 className="text-lg font-bold text-green-950">Compradores próximos</h2>}
+                <div className="grid gap-4 md:grid-cols-2">
+                  {filteredBuyers.map((buyer) => (
+                    <BuyerCard key={buyer.id} buyer={buyer} />
+                  ))}
+                </div>
+              </section>
             </div>
           )}
         </>
