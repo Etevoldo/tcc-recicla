@@ -142,7 +142,6 @@ export async function deleteUser(req, res) {
         const buyerId = user.BuyerId
         await user.destroy()
         if (buyerId != null) {
-            await db.offer.destroy({ where: { BuyerId: buyerId } })
             await db.product.destroy({ where: { ownerId: buyerId } })
             await Buyer.destroy({ where: { id: buyerId } })
         }

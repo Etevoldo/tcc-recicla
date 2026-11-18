@@ -5,7 +5,6 @@ import { Sequelize } from 'sequelize';
 
 import { productModel } from './products.mjs';
 import { buyerModel } from './buyer.mjs';
-import { offerModel } from './offer.mjs';
 import { addressModel } from './address.mjs';
 import { userModel } from './user.mjs';
 
@@ -29,13 +28,10 @@ db.sequelize = sequelize;
 db.product = productModel(sequelize);
 db.buyer = buyerModel(sequelize);
 db.address = addressModel(sequelize);
-db.offer = offerModel(sequelize, db.product, db.buyer);
 db.user = userModel(sequelize);
 
-db.product.belongsToMany(db.buyer, { through: db.offer });
-db.buyer.belongsToMany(db.product, { through: db.offer });
 db.product.belongsTo(db.buyer, { as: 'owner', foreignKey: 'ownerId', onDelete: 'CASCADE' });
-db.buyer.hasMany(db.product, { as: 'ownedProducts', foreignKey: 'ownerId' });
+db.buyer.hasMany(db.product, { foreignKey: 'ownerId', onDelete: 'CASCADE' });
 db.user.belongsTo(db.buyer);
 db.buyer.hasOne(db.user);
 

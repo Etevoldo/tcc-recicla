@@ -20,6 +20,10 @@ function productModel(sequelize) {
                 type: DataTypes.INTEGER,
                 allowNull: false,
             },
+            price: {
+                type: DataTypes.INTEGER, // em centavos
+                allowNull: false,
+            },
             recicling_code: DataTypes.ENUM(
                 'AZUL',    // Papel ou papelão
                 'VERDE',   // Vidro

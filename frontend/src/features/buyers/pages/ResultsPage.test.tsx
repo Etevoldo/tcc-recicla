@@ -69,13 +69,13 @@ describe('ResultsPage', () => {
       }
       if (url.includes('/buyers/1/products')) {
         return new Response(
-          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', Offer: { price: 150 } }]),
+          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', price: 150 }]),
           { status: 200 },
         )
       }
       if (url.includes('/buyers/2/products')) {
         return new Response(
-          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', Offer: { price: 80 } }]),
+          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', price: 80 }]),
           { status: 200 },
         )
       }
@@ -112,13 +112,13 @@ describe('ResultsPage', () => {
       }
       if (url.includes('/buyers/1/products')) {
         return new Response(
-          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', Offer: { price: 150 } }]),
+          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', price: 150 }]),
           { status: 200 },
         )
       }
       if (url.includes('/buyers/2/products')) {
         return new Response(
-          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', Offer: { price: 80 } }]),
+          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', price: 80 }]),
           { status: 200 },
         )
       }
@@ -154,13 +154,13 @@ describe('ResultsPage', () => {
       }
       if (url.includes('/buyers/1/products')) {
         return new Response(
-          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', Offer: { price: 150 } }]),
+          JSON.stringify([{ id: 1, name: 'Garrafa PET', recicling_code: 'PET', price: 150 }]),
           { status: 200 },
         )
       }
       if (url.includes('/buyers/2/products')) {
         return new Response(
-          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', Offer: { price: 80 } }]),
+          JSON.stringify([{ id: 2, name: 'Papelão', recicling_code: 'AZUL', price: 80 }]),
           { status: 200 },
         )
       }

@@ -7,10 +7,15 @@ insertTestData();
 
 export async function insertTestData() {
     try {
+        try {
+            await db.sequelize.getQueryInterface().dropTable('Offers');
+        } catch (error) {
+            // banco novo, ou a tabela Offers já foi removida
+        }
         await db.sequelize.sync({force: true});
         await insertTestBuyers();
         await insertTestUsers();
-        await insertTestProductsAndOffers();
+        await insertTestProducts();
         await insertTestAddresses();
     } catch (error) {
         console.log(error);
@@ -75,7 +80,7 @@ async function insertTestBuyers() {
     ]);
 }
 
-async function insertTestProductsAndOffers() {
+async function insertTestProducts() {
     const catalog = [
         { name: "Garrafa PET", recicling_code: "PET" },
         { name: "Papelão", recicling_code: "AZUL" },
@@ -90,7 +95,7 @@ async function insertTestProductsAndOffers() {
         { name: "Face-shield", recicling_code: "PS" },
         { name: "Caderno Usado", recicling_code: "AZUL" },
     ]
-    const offerSeeds = [
+    const productSeeds = [
         { catalog: 0, buyerId: 1, price: 150 },
         { catalog: 0, buyerId: 2, price: 145 },
         { catalog: 0, buyerId: 5, price: 160 },
@@ -128,17 +133,16 @@ async function insertTestProductsAndOffers() {
     ]
 
     const products = []
-    const offers = []
     let id = 1
-    for (const seed of offerSeeds) {
+    for (const seed of productSeeds) {
         const item = catalog[seed.catalog]
         products.push({
             id,
             name: item.name,
             recicling_code: item.recicling_code,
             ownerId: seed.buyerId,
+            price: seed.price,
         })
-        offers.push({ price: seed.price, ProductId: id, BuyerId: seed.buyerId })
         id += 1
     }
     for (const item of leftovers) {
@@ -147,13 +151,12 @@ async function insertTestProductsAndOffers() {
             name: item.name,
             recicling_code: item.recicling_code,
             ownerId: item.ownerId,
+            price: item.price,
         })
-        offers.push({ price: item.price, ProductId: id, BuyerId: item.ownerId })
         id += 1
     }
 
     await db.product.bulkCreate(products)
-    await db.offer.bulkCreate(offers)
 }
 
 async function insertTestAddresses() {

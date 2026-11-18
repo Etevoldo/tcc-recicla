@@ -6,7 +6,6 @@ import express from "express";
 import { buyers } from './routes/buyer.mjs'
 import { addresses } from './routes/addresses.mjs'
 import { products } from './routes/product.mjs'
-import { offers } from './routes/offer.mjs'
 import { auth } from './routes/auth.mjs'
 import { users } from './routes/users.mjs'
 import morgan from 'morgan'
@@ -21,7 +20,6 @@ app.use('/users', users);
 app.use('/buyers', buyers);
 app.use('/addresses', addresses);
 app.use('/products', products);
-app.use('/offers', offers);
 
 app.get('/', (req, res) =>{
     res.send('Hello world!!\n');
