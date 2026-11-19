@@ -13,7 +13,6 @@ function buyerModel(sequelize) {
                 autoIncrement: true,
             },
             name: DataTypes.STRING,
-            cpf: DataTypes.STRING,
             email: DataTypes.STRING,
             phoneNumber: DataTypes.STRING,
             cep: DataTypes.STRING,

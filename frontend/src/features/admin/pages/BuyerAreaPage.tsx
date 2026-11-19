@@ -68,7 +68,6 @@ export function BuyerAreaPage() {
         buyerId,
         toBuyerInput(input, {
           email: buyerQuery.data.email ?? '',
-          cpf: buyerQuery.data.cpf ?? '',
         }),
       )
     },

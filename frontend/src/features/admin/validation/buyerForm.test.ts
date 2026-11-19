@@ -24,7 +24,7 @@ describe('validateBuyerForm', () => {
     ).toEqual({})
   })
 
-  it('monta o payload sem CPF', () => {
+  it('monta o payload do comprador', () => {
     expect(
       toBuyerInput(
         {
@@ -34,11 +34,10 @@ describe('validateBuyerForm', () => {
           address: 'Rua Exemplo',
           addressNumber: '100',
         },
-        { email: 'ana.silva@email.com', cpf: '' },
+        { email: 'ana.silva@email.com' },
       ),
     ).toEqual({
       name: 'Ana Silva',
-      cpf: '',
       email: 'ana.silva@email.com',
       phoneNumber: '(11) 98765-4321',
       cep: '05424020',

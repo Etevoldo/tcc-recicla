@@ -51,32 +51,32 @@ async function insertTestUsers() {
 async function insertTestBuyers() {
     await db.buyer.bulkCreate([
         // Região Sudeste
-        { id: 1, name: "Ana Silva", cpf: "11122233344", email: "ana.silva@email.com", phoneNumber: "(11) 98765-4321", cep: "05424020", address: "Rua Exemplo, 123", addressNumber: "100" },
-        { id: 2, name: "Bruno Costa", cpf: "22233344455", email: "bruno.costa@email.com", phoneNumber: "(21) 97654-3210", cep: "20021120", address: "Av. Exemplo, 456", addressNumber: "200" },
-        { id: 3, name: "Carla Souza", cpf: "33344455566", email: "carla.souza@email.com", phoneNumber: "(31) 96543-2109", cep: "31270000", address: "Rua Exemplo, 789", addressNumber: "300" },
-        { id: 4, name: "Daniel Lima", cpf: "44455566677", email: "daniel.lima@email.com", phoneNumber: "(11) 95432-1098", cep: "05424020", address: "Rua Exemplo, 101", addressNumber: "400" },
+        { id: 1, name: "Ana Silva", email: "ana.silva@email.com", phoneNumber: "(11) 98765-4321", cep: "05424020", address: "Rua Exemplo, 123", addressNumber: "100" },
+        { id: 2, name: "Bruno Costa", email: "bruno.costa@email.com", phoneNumber: "(21) 97654-3210", cep: "20021120", address: "Av. Exemplo, 456", addressNumber: "200" },
+        { id: 3, name: "Carla Souza", email: "carla.souza@email.com", phoneNumber: "(31) 96543-2109", cep: "31270000", address: "Rua Exemplo, 789", addressNumber: "300" },
+        { id: 4, name: "Daniel Lima", email: "daniel.lima@email.com", phoneNumber: "(11) 95432-1098", cep: "05424020", address: "Rua Exemplo, 101", addressNumber: "400" },
         // Região Nordeste
-        { id: 5, name: "Eduarda Santos", cpf: "55566677788", email: "eduarda.santos@email.com", phoneNumber: "(71) 94321-0987", cep: "40170115", address: "Av. Exemplo, 202", addressNumber: "500" },
-        { id: 6, name: "Felipe Almeida", cpf: "66677788899", email: "felipe.almeida@email.com", phoneNumber: "(81) 93210-9876", cep: "50690000", address: "Rua Exemplo, 303", addressNumber: "600" },
-        { id: 7, name: "Gabriela Rocha", cpf: "77788899900", email: "gabriela.rocha@email.com", phoneNumber: "(85) 92109-8765", cep: "60862750", address: "Av. Exemplo, 404", addressNumber: "700" },
-        { id: 8, name: "Heitor Fernandes", cpf: "88899900011", email: "heitor.fernandes@email.com", phoneNumber: "(84) 91098-7654", cep: "59020400", address: "Rua Exemplo, 505", addressNumber: "800" },
-        { id: 9, name: "Isabela Martins", cpf: "99900011122", email: "isabela.martins@email.com", phoneNumber: "(83) 90987-6543", cep: "58010100", address: "Av. Exemplo, 606", addressNumber: "900" },
-        { id: 10, name: "João Pereira", cpf: "00011122233", email: "joao.pereira@email.com", phoneNumber: "(82) 99876-5432", cep: "57020200", address: "Rua Exemplo, 707", addressNumber: "1000" },
+        { id: 5, name: "Eduarda Santos", email: "eduarda.santos@email.com", phoneNumber: "(71) 94321-0987", cep: "40170115", address: "Av. Exemplo, 202", addressNumber: "500" },
+        { id: 6, name: "Felipe Almeida", email: "felipe.almeida@email.com", phoneNumber: "(81) 93210-9876", cep: "50690000", address: "Rua Exemplo, 303", addressNumber: "600" },
+        { id: 7, name: "Gabriela Rocha", email: "gabriela.rocha@email.com", phoneNumber: "(85) 92109-8765", cep: "60862750", address: "Av. Exemplo, 404", addressNumber: "700" },
+        { id: 8, name: "Heitor Fernandes", email: "heitor.fernandes@email.com", phoneNumber: "(84) 91098-7654", cep: "59020400", address: "Rua Exemplo, 505", addressNumber: "800" },
+        { id: 9, name: "Isabela Martins", email: "isabela.martins@email.com", phoneNumber: "(83) 90987-6543", cep: "58010100", address: "Av. Exemplo, 606", addressNumber: "900" },
+        { id: 10, name: "João Pereira", email: "joao.pereira@email.com", phoneNumber: "(82) 99876-5432", cep: "57020200", address: "Rua Exemplo, 707", addressNumber: "1000" },
         // Região Norte
-        { id: 11, name: "Kelly Nascimento", cpf: "11223344556", email: "kelly.nascimento@email.com", phoneNumber: "(92) 98765-4321", cep: "69010110", address: "Av. Exemplo, 808", addressNumber: "1100" },
-        { id: 12, name: "Lucas Barbosa", cpf: "22334455667", email: "lucas.barbosa@email.com", phoneNumber: "(91) 97654-3210", cep: "66075110", address: "Rua Exemplo, 909", addressNumber: "1200" },
-        { id: 13, name: "Mariana Araújo", cpf: "33445566778", email: "mariana.araujo@email.com", phoneNumber: "(69) 96543-2109", cep: "76801126", address: "Av. Exemplo, 1010", addressNumber: "1300" },
+        { id: 11, name: "Kelly Nascimento", email: "kelly.nascimento@email.com", phoneNumber: "(92) 98765-4321", cep: "69010110", address: "Av. Exemplo, 808", addressNumber: "1100" },
+        { id: 12, name: "Lucas Barbosa", email: "lucas.barbosa@email.com", phoneNumber: "(91) 97654-3210", cep: "66075110", address: "Rua Exemplo, 909", addressNumber: "1200" },
+        { id: 13, name: "Mariana Araújo", email: "mariana.araujo@email.com", phoneNumber: "(69) 96543-2109", cep: "76801126", address: "Av. Exemplo, 1010", addressNumber: "1300" },
         // Região Centro-Oeste
-        { id: 14, name: "Nicolas Ribeiro", cpf: "44556677889", email: "nicolas.ribeiro@email.com", phoneNumber: "(61) 95432-1098", cep: "70910900", address: "Rua Exemplo, 1111", addressNumber: "1400" },
-        { id: 15, name: "Olívia Carvalho", cpf: "55667788990", email: "olivia.carvalho@email.com", phoneNumber: "(62) 94321-0987", cep: "74690900", address: "Av. Exemplo, 1212", addressNumber: "1500" },
-        { id: 16, name: "Paulo Gomes", cpf: "66778899001", email: "paulo.gomes@email.com", phoneNumber: "(65) 93210-9876", cep: "78060900", address: "Rua Exemplo, 1313", addressNumber: "1600" },
+        { id: 14, name: "Nicolas Ribeiro", email: "nicolas.ribeiro@email.com", phoneNumber: "(61) 95432-1098", cep: "70910900", address: "Rua Exemplo, 1111", addressNumber: "1400" },
+        { id: 15, name: "Olívia Carvalho", email: "olivia.carvalho@email.com", phoneNumber: "(62) 94321-0987", cep: "74690900", address: "Av. Exemplo, 1212", addressNumber: "1500" },
+        { id: 16, name: "Paulo Gomes", email: "paulo.gomes@email.com", phoneNumber: "(65) 93210-9876", cep: "78060900", address: "Rua Exemplo, 1313", addressNumber: "1600" },
         // Região Sul
-        { id: 17, name: "Queren Dias", cpf: "77889900112", email: "queren.dias@email.com", phoneNumber: "(41) 92109-8765", cep: "80060150", address: "Av. Exemplo, 1414", addressNumber: "1700" },
-        { id: 18, name: "Rafael Monteiro", cpf: "88990011223", email: "rafael.monteiro@email.com", phoneNumber: "(51) 91098-7654", cep: "91501970", address: "Rua Exemplo, 1515", addressNumber: "1800" },
-        { id: 19, name: "Sofia Cardoso", cpf: "99001122334", email: "sofia.cardoso@email.com", phoneNumber: "(48) 90987-6543", cep: "88040900", address: "Av. Exemplo, 1616", addressNumber: "1900" },
+        { id: 17, name: "Queren Dias", email: "queren.dias@email.com", phoneNumber: "(41) 92109-8765", cep: "80060150", address: "Av. Exemplo, 1414", addressNumber: "1700" },
+        { id: 18, name: "Rafael Monteiro", email: "rafael.monteiro@email.com", phoneNumber: "(51) 91098-7654", cep: "91501970", address: "Rua Exemplo, 1515", addressNumber: "1800" },
+        { id: 19, name: "Sofia Cardoso", email: "sofia.cardoso@email.com", phoneNumber: "(48) 90987-6543", cep: "88040900", address: "Av. Exemplo, 1616", addressNumber: "1900" },
         // Compradores SEM OFERTAS (para testes de borda)
-        { id: 20, name: "Tomás Vieira", cpf: "00112233445", email: "tomas.vieira@email.com", phoneNumber: "(11) 99876-5432", cep: "05424020", address: "Rua Exemplo, 1717", addressNumber: "2000" },
-        { id: 21, name: "Vitória Lopes", cpf: "11223344556", email: "vitoria.lopes@email.com", phoneNumber: "(21) 98765-4321", cep: "20021120", address: "Av. Exemplo, 1818", addressNumber: "2100" },
+        { id: 20, name: "Tomás Vieira", email: "tomas.vieira@email.com", phoneNumber: "(11) 99876-5432", cep: "05424020", address: "Rua Exemplo, 1717", addressNumber: "2000" },
+        { id: 21, name: "Vitória Lopes", email: "vitoria.lopes@email.com", phoneNumber: "(21) 98765-4321", cep: "20021120", address: "Av. Exemplo, 1818", addressNumber: "2100" },
     ]);
 }
 

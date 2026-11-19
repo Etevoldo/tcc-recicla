@@ -21,7 +21,6 @@ export type RecyclingCode = (typeof RECYCLING_CODE_VALUES)[number]
 export type Buyer = {
   id: number
   name: string
-  cpf: string
   email: string
   phoneNumber: string
   cep: string

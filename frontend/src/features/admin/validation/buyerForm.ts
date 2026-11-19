@@ -32,11 +32,10 @@ export function validateBuyerForm(values: BuyerFormValues): BuyerFormErrors {
 
 export function toBuyerInput(
   values: BuyerFormValues,
-  extras: { email: string; cpf: string },
+  extras: { email: string },
 ): BuyerInput {
   return {
     name: values.name.trim(),
-    cpf: extras.cpf,
     email: extras.email,
     phoneNumber: values.phoneNumber.trim(),
     cep: normalizeCep(values.cep),

@@ -19,35 +19,6 @@ export function centsToReaisInput(cents: number): string {
   return (cents / 100).toFixed(2).replace('.', ',')
 }
 
-export function normalizeCpf(value: string): string {
-  return value.replace(/\D/g, '').slice(0, 11)
-}
-
-export function formatCpf(value: string): string {
-  return normalizeCpf(value)
-    .replace(/^(\d{3})(\d)/, '$1.$2')
-    .replace(/^(\d{3})\.(\d{3})(\d)/, '$1.$2.$3')
-    .replace(/^(\d{3})\.(\d{3})\.(\d{3})(\d)/, '$1.$2.$3-$4')
-}
-
-export function isValidCpf(value: string): boolean {
-  const cpf = normalizeCpf(value)
-  if (!/^\d{11}$/.test(cpf)) return false
-  if (/^(\d)\1{10}$/.test(cpf)) return false
-
-  let sum = 0
-  for (let i = 0; i < 9; i += 1) sum += Number(cpf[i]) * (10 - i)
-  let first = (sum * 10) % 11
-  if (first === 10) first = 0
-  if (first !== Number(cpf[9])) return false
-
-  sum = 0
-  for (let i = 0; i < 10; i += 1) sum += Number(cpf[i]) * (11 - i)
-  let second = (sum * 10) % 11
-  if (second === 10) second = 0
-  return second === Number(cpf[10])
-}
-
 export function normalizePhone(value: string): string {
   return value.replace(/\D/g, '').slice(0, 11)
 }

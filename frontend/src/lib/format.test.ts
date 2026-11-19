@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   centsToReaisInput,
-  formatCpf,
   formatPhone,
   formatPrice,
-  isValidCpf,
   isValidEmail,
   isValidPhone,
   reaisToCents,
@@ -26,15 +24,6 @@ describe('preço', () => {
 
   it('converte centavos para input em reais', () => {
     expect(centsToReaisInput(150)).toBe('1,50')
-  })
-})
-
-describe('CPF', () => {
-  it('formata e valida dígitos verificadores', () => {
-    expect(formatCpf('52998224725')).toBe('529.982.247-25')
-    expect(isValidCpf('529.982.247-25')).toBe(true)
-    expect(isValidCpf('11111111111')).toBe(false)
-    expect(isValidCpf('123')).toBe(false)
   })
 })
 

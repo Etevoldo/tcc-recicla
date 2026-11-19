@@ -44,7 +44,6 @@ describe('BuyerAreaPage', () => {
             JSON.stringify({
               id: 1,
               name: '',
-              cpf: '',
               email: 'ana.silva@email.com',
               phoneNumber: '',
               cep: '',

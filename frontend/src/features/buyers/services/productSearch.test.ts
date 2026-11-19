@@ -13,7 +13,6 @@ const glass = product({ id: 3, name: 'Garrafa de Vidro', recicling_code: 'VERDE'
 const ana: BuyerWithProducts = {
   id: 1,
   name: 'Ana Silva',
-  cpf: '',
   email: 'ana@email.com',
   phoneNumber: '11987654321',
   cep: '05424020',
@@ -25,7 +24,6 @@ const ana: BuyerWithProducts = {
 const bruno: BuyerWithProducts = {
   id: 2,
   name: 'Bruno Costa',
-  cpf: '',
   email: 'bruno@email.com',
   phoneNumber: '21976543210',
   cep: '05424020',
