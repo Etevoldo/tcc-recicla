@@ -2,6 +2,9 @@ import { Link, Outlet, useLocation } from 'react-router-dom'
 import { cn } from '../../lib/cn'
 import { useAuth } from '../../features/auth/AuthContext'
 
+const gestaoLinkClass =
+  'inline-flex min-h-11 items-center justify-center rounded-xl bg-green-900 px-4 py-2 font-semibold text-white transition-colors hover:bg-green-800'
+
 export function AppLayout() {
   const location = useLocation()
   const { user, logout } = useAuth()
@@ -21,10 +24,7 @@ export function AppLayout() {
                 <span className="hidden text-stone-500 sm:inline">{user.name || user.email}</span>
                 <Link
                   to="/gestao"
-                  className={cn(
-                    'font-semibold text-green-800 hover:text-green-950',
-                    isGestao && 'underline decoration-2 underline-offset-4',
-                  )}
+                  className={cn(gestaoLinkClass, isGestao && 'ring-2 ring-green-700 ring-offset-2')}
                 >
                   Gestão
                 </Link>
@@ -39,10 +39,7 @@ export function AppLayout() {
             ) : (
               <Link
                 to="/login"
-                className={cn(
-                  'font-semibold text-green-800 hover:text-green-950',
-                  isGestao && 'underline decoration-2 underline-offset-4',
-                )}
+                className={cn(gestaoLinkClass, isGestao && 'ring-2 ring-green-700 ring-offset-2')}
               >
                 Gestão
               </Link>
