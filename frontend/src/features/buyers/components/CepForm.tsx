@@ -4,14 +4,18 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Input } from '../../../components/ui/Input'
+import { Select } from '../../../components/ui/Select'
+import { formatRecyclingOption, RECYCLING_CODES } from '../constants/recyclingCodes'
 import { formatCep, isValidCep, normalizeCep } from '../services/cep'
 import { type SearchRadiusKm } from '../services/searchApi'
+import type { RecyclingCode } from '../types'
 import { RadiusSelect } from './RadiusSelect'
 
 export function CepForm() {
   const navigate = useNavigate()
   const [cep, setCep] = useState('')
   const [product, setProduct] = useState('')
+  const [color, setColor] = useState<RecyclingCode | ''>('')
   const [radius, setRadius] = useState<SearchRadiusKm>(15)
   const [error, setError] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
@@ -27,6 +31,7 @@ export function CepForm() {
     const params = new URLSearchParams({ cep: normalizeCep(cep), raio: String(radius) })
     const productQuery = product.trim()
     if (productQuery) params.set('produto', productQuery)
+    if (color) params.set('cor', color)
     navigate(`/compradores?${params}`)
   }
 
@@ -36,8 +41,8 @@ export function CepForm() {
         <div>
           <h2 className="text-xl font-bold text-green-950">Comece pela sua região</h2>
           <p className="mt-2 text-sm leading-relaxed text-stone-600">
-            Informe o CEP para achar compradores próximos. Se quiser, busque também um tipo de
-            produto.
+            Informe o CEP para achar compradores próximos. Se quiser, filtre pelo material
+            (AZUL, PET, vidro) ou busque um produto.
           </p>
         </div>
         <Input
@@ -57,6 +62,20 @@ export function CepForm() {
             setError('')
           }}
         />
+        <Select
+          id="cor"
+          name="cor"
+          label="Material"
+          value={color}
+          onChange={(event) => setColor(event.target.value as RecyclingCode | '')}
+        >
+          <option value="">Todas</option>
+          {RECYCLING_CODES.map((item) => (
+            <option key={item.code} value={item.code}>
+              {formatRecyclingOption(item)}
+            </option>
+          ))}
+        </Select>
         <Input
           id="produto"
           name="produto"

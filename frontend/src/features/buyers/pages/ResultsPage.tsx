@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { EmptyState } from '../../../components/ui/EmptyState'
@@ -6,11 +6,13 @@ import { ErrorState } from '../../../components/ui/ErrorState'
 import { Spinner } from '../../../components/ui/Spinner'
 import { ApiError } from '../../../lib/api'
 import { BuyerCard } from '../components/BuyerCard'
+import { ItemFilter } from '../components/ItemFilter'
 import { MaterialFilter } from '../components/MaterialFilter'
 import { NearbyProductCard } from '../components/NearbyProductCard'
 import { RadiusSelect } from '../components/RadiusSelect'
+import { parseRecyclingCode } from '../constants/recyclingCodes'
 import { formatCep, isValidCep, normalizeCep } from '../services/cep'
-import { filterBuyersByProduct, nearbyProductMatches } from '../services/productSearch'
+import { collectItemNames, filterBuyersByProduct, nearbyProductMatches, sameItemName } from '../services/productSearch'
 import { parseRadiusKm, searchNearbyBuyers } from '../services/searchApi'
 import type { RecyclingCode } from '../types'
 
@@ -19,7 +21,8 @@ export function ResultsPage() {
   const cep = normalizeCep(searchParams.get('cep') ?? '')
   const radius = parseRadiusKm(searchParams.get('raio'))
   const productQuery = searchParams.get('produto') ?? ''
-  const [material, setMaterial] = useState<RecyclingCode | 'ALL'>('ALL')
+  const material = parseRecyclingCode(searchParams.get('cor'))
+  const [item, setItem] = useState('ALL')
 
   const query = useQuery({
     queryKey: ['search', cep, radius],
@@ -27,26 +30,29 @@ export function ResultsPage() {
     enabled: isValidCep(cep),
   })
 
-  const availableCodes = useMemo(() => {
-    const codes = new Set<RecyclingCode>()
-    for (const buyer of query.data?.buyers ?? []) {
-      for (const product of buyer.products) codes.add(product.recicling_code)
-    }
-    return [...codes]
-  }, [query.data])
-
-  const filteredBuyers = useMemo(
-    () => filterBuyersByProduct(query.data?.buyers ?? [], material, productQuery),
+  const itemNames = useMemo(
+    () => collectItemNames(query.data?.buyers ?? [], material, productQuery),
     [material, productQuery, query.data],
   )
-  const productMatches = useMemo(() => nearbyProductMatches(filteredBuyers), [filteredBuyers])
-  const hasProductFilter = productQuery.trim() !== '' || material !== 'ALL'
 
-  function replaceParams(nextRadius: string) {
+  useEffect(() => {
+    if (item === 'ALL') return
+    if (!itemNames.some((name) => sameItemName(name, item))) setItem('ALL')
+  }, [item, itemNames])
+
+  const filteredBuyers = useMemo(
+    () => filterBuyersByProduct(query.data?.buyers ?? [], material, productQuery, item),
+    [item, material, productQuery, query.data],
+  )
+  const productMatches = useMemo(() => nearbyProductMatches(filteredBuyers), [filteredBuyers])
+  const hasProductFilter = productQuery.trim() !== '' || material !== 'ALL' || item !== 'ALL'
+
+  function replaceParams(nextRadius: string, nextMaterial: RecyclingCode | 'ALL') {
     const params = new URLSearchParams()
     params.set('cep', cep)
     params.set('raio', nextRadius)
     if (productQuery.trim()) params.set('produto', productQuery.trim())
+    if (nextMaterial !== 'ALL') params.set('cor', nextMaterial)
     setSearchParams(params)
   }
 
@@ -84,8 +90,8 @@ export function ResultsPage() {
           <RadiusSelect
             value={radius}
             onChange={(next) => {
-              setMaterial('ALL')
-              replaceParams(String(next))
+              setItem('ALL')
+              replaceParams(String(next), 'ALL')
             }}
           />
         </div>
@@ -120,11 +126,14 @@ export function ResultsPage() {
 
       {query.data && query.data.buyers.length > 0 && (
         <>
-          <MaterialFilter codes={availableCodes} value={material} onChange={setMaterial} />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <MaterialFilter value={material} onChange={(next) => replaceParams(String(radius), next)} />
+            <ItemFilter names={itemNames} value={item} onChange={setItem} />
+          </div>
           {filteredBuyers.length === 0 ? (
             <EmptyState
-              title={hasProductFilter ? 'Nenhum produto próximo com esse tipo ou código' : 'Nenhum comprador para este material'}
-              description="Limpe o filtro, escolha outro tipo de reciclável ou busque por outro código."
+              title={hasProductFilter ? 'Nenhum produto próximo com essa cor ou item' : 'Nenhum comprador para este material'}
+              description="Limpe o filtro, escolha outra cor ou outro item."
             />
           ) : (
             <div className="grid gap-10">

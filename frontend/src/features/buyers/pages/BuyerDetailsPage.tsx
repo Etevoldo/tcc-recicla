@@ -5,7 +5,7 @@ import { ErrorState } from '../../../components/ui/ErrorState'
 import { Spinner } from '../../../components/ui/Spinner'
 import { ApiError } from '../../../lib/api'
 import { formatPhone, formatPrice, whatsappLink } from '../../../lib/format'
-import { getRecyclingCode } from '../constants/recyclingCodes'
+import { formatRecyclingColor, getRecyclingCode } from '../constants/recyclingCodes'
 import { formatCep } from '../services/cep'
 import { getBuyer, getBuyerProducts } from '../services/buyersApi'
 import { productPrice } from '../types'
@@ -113,7 +113,7 @@ export function BuyerDetailsPage() {
               <thead>
                 <tr className="border-b border-stone-200 text-stone-500">
                   <th className="py-2 pr-4 font-semibold">Material</th>
-                  <th className="py-2 pr-4 font-semibold">Código</th>
+                  <th className="py-2 pr-4 font-semibold">Cor</th>
                   <th className="py-2 font-semibold">Preço</th>
                 </tr>
               </thead>
@@ -124,7 +124,7 @@ export function BuyerDetailsPage() {
                   return (
                     <tr key={product.id} className="border-b border-stone-100">
                       <td className="py-3 pr-4 font-medium text-green-950">{product.name}</td>
-                      <td className="py-3 pr-4">{info.label}</td>
+                      <td className="py-3 pr-4">{formatRecyclingColor(info)}</td>
                       <td className="py-3">{price != null ? formatPrice(price) : '—'}</td>
                     </tr>
                   )

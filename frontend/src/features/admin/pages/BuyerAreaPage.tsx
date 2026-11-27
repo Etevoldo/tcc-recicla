@@ -9,7 +9,7 @@ import { Modal } from '../../../components/ui/Modal'
 import { Spinner } from '../../../components/ui/Spinner'
 import { formatPhone, formatPrice } from '../../../lib/format'
 import { useAuth } from '../../auth/AuthContext'
-import { getRecyclingCode } from '../../buyers/constants/recyclingCodes'
+import { formatRecyclingColor, getRecyclingCode } from '../../buyers/constants/recyclingCodes'
 import { formatCep, isValidCep } from '../../buyers/services/cep'
 import { getBuyer, getBuyerProducts, updateBuyer } from '../../buyers/services/buyersApi'
 import { createProduct, deleteProduct, updateProduct } from '../../buyers/services/productsApi'
@@ -217,7 +217,7 @@ export function BuyerAreaPage() {
               <thead>
                 <tr className="border-b border-stone-200 text-stone-500">
                   <th className="px-4 py-3 font-semibold">Nome</th>
-                  <th className="px-4 py-3 font-semibold">Tipo</th>
+                  <th className="px-4 py-3 font-semibold">Cor</th>
                   <th className="px-4 py-3 font-semibold">Preço</th>
                   <th className="px-4 py-3 font-semibold">Ações</th>
                 </tr>
@@ -229,7 +229,7 @@ export function BuyerAreaPage() {
                   return (
                     <tr key={product.id} className="border-b border-stone-100">
                       <td className="px-4 py-3 font-medium text-green-950">{product.name}</td>
-                      <td className="px-4 py-3">{info.label}</td>
+                      <td className="px-4 py-3">{formatRecyclingColor(info)}</td>
                       <td className="px-4 py-3">{price != null ? formatPrice(price) : '—'}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-3">

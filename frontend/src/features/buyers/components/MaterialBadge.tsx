@@ -1,4 +1,4 @@
-import { getRecyclingCode } from '../constants/recyclingCodes'
+import { formatRecyclingColor, getRecyclingCode } from '../constants/recyclingCodes'
 import type { RecyclingCode } from '../types'
 import { cn } from '../../../lib/cn'
 
@@ -12,7 +12,7 @@ export function MaterialBadge({
   const info = getRecyclingCode(code)
   return (
     <span className={cn('inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold', info.className)}>
-      <span>{info.label}</span>
+      <span>{formatRecyclingColor(info)}</span>
       {priceLabel && <span>{priceLabel}</span>}
     </span>
   )

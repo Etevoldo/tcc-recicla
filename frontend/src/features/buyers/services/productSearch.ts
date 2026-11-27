@@ -25,18 +25,26 @@ export function matchesProductQuery(product: Product, query: string): boolean {
 
   const q = fold(raw)
   if (!q) return true
+  const info = getRecyclingCode(product.recicling_code)
   if (fold(product.recicling_code).includes(q)) return true
-  if (fold(getRecyclingCode(product.recicling_code).label).includes(q)) return true
+  if (fold(info.colorLabel).includes(q)) return true
+  if (fold(info.label).includes(q)) return true
   if (fold(product.name).includes(q)) return true
   return false
+}
+
+export function sameItemName(left: string, right: string): boolean {
+  return fold(left) === fold(right)
 }
 
 export function matchesProductFilters(
   product: Product,
   material: RecyclingCode | 'ALL',
   query: string,
+  itemName = 'ALL',
 ): boolean {
   if (material !== 'ALL' && product.recicling_code !== material) return false
+  if (itemName !== 'ALL' && !sameItemName(product.name, itemName)) return false
   return matchesProductQuery(product, query)
 }
 
@@ -44,16 +52,34 @@ export function filterBuyersByProduct(
   buyers: BuyerWithProducts[],
   material: RecyclingCode | 'ALL',
   query: string,
+  itemName = 'ALL',
 ): BuyerWithProducts[] {
-  const hasFilter = material !== 'ALL' || query.trim() !== ''
+  const hasFilter = material !== 'ALL' || query.trim() !== '' || itemName !== 'ALL'
   if (!hasFilter) return buyers
 
   return buyers
     .map((buyer) => ({
       ...buyer,
-      products: buyer.products.filter((product) => matchesProductFilters(product, material, query)),
+      products: buyer.products.filter((product) => matchesProductFilters(product, material, query, itemName)),
     }))
     .filter((buyer) => buyer.products.length > 0)
+}
+
+export function collectItemNames(
+  buyers: BuyerWithProducts[],
+  material: RecyclingCode | 'ALL',
+  query: string,
+): string[] {
+  const names = new Map<string, string>()
+  for (const buyer of buyers) {
+    for (const product of buyer.products) {
+      if (!matchesProductFilters(product, material, query, 'ALL')) continue
+      const key = fold(product.name)
+      if (!key || names.has(key)) continue
+      names.set(key, product.name.trim())
+    }
+  }
+  return [...names.values()].sort((left, right) => left.localeCompare(right, 'pt-BR'))
 }
 
 export function nearbyProductMatches(buyers: BuyerWithProducts[]): NearbyProductMatch[] {

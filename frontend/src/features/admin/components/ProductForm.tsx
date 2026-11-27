@@ -4,7 +4,7 @@ import { Button } from '../../../components/ui/Button'
 import { Input } from '../../../components/ui/Input'
 import { Select } from '../../../components/ui/Select'
 import { centsToReaisInput, reaisToCents } from '../../../lib/format'
-import { RECYCLING_CODES } from '../../buyers/constants/recyclingCodes'
+import { formatRecyclingOption, RECYCLING_CODES } from '../../buyers/constants/recyclingCodes'
 import type { Product, ProductInput, RecyclingCode } from '../../buyers/types'
 import { productPrice } from '../../buyers/types'
 
@@ -22,20 +22,21 @@ export function ProductForm({
   onCancel?: () => void
 }) {
   const [name, setName] = useState(initial?.name ?? '')
-  const [code, setCode] = useState<RecyclingCode>(initial?.recicling_code ?? 'PET')
+  const [code, setCode] = useState<RecyclingCode | ''>(initial?.recicling_code ?? '')
   const [price, setPrice] = useState(() => {
     const cents = initial ? productPrice(initial) : undefined
     return cents != null ? centsToReaisInput(cents) : ''
   })
-  const [errors, setErrors] = useState<{ name?: string; price?: string }>({})
+  const [errors, setErrors] = useState<{ name?: string; code?: string; price?: string }>({})
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const nextErrors: { name?: string; price?: string } = {}
+    const nextErrors: { name?: string; code?: string; price?: string } = {}
     if (!name.trim()) nextErrors.name = 'Informe o nome do produto.'
+    if (!code) nextErrors.code = 'Selecione a cor do reciclável.'
     const cents = reaisToCents(price)
     if (!Number.isFinite(cents) || cents <= 0) nextErrors.price = 'Informe um preço maior que zero.'
-    if (nextErrors.name || nextErrors.price) {
+    if (!code || nextErrors.name || nextErrors.code || nextErrors.price) {
       setErrors(nextErrors)
       return
     }
@@ -56,13 +57,18 @@ export function ProductForm({
       />
       <Select
         id="product-code"
-        label="Tipo de reciclável"
+        label="Cor do reciclável"
         value={code}
-        onChange={(event) => setCode(event.target.value as RecyclingCode)}
+        error={errors.code}
+        onChange={(event) => {
+          setCode(event.target.value as RecyclingCode | '')
+          setErrors((current) => ({ ...current, code: undefined }))
+        }}
       >
+        <option value="">Selecione a cor</option>
         {RECYCLING_CODES.map((item) => (
           <option key={item.code} value={item.code}>
-            {item.code} — {item.label}
+            {formatRecyclingOption(item)}
           </option>
         ))}
       </Select>

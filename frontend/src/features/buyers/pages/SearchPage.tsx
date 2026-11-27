@@ -9,8 +9,8 @@ export function SearchPage() {
           Materiais para um <span className="text-green-700">novo ciclo.</span>
         </h1>
         <p className="mt-6 max-w-lg text-lg leading-relaxed text-stone-600">
-          Encontre compradores de recicláveis perto de você pelo CEP. Dá para buscar também um tipo
-          de produto, pelo código de reciclagem ou pelo código do produto.
+          Encontre compradores de recicláveis perto de você pelo CEP. Dá para filtrar pela cor do
+          material e, nos resultados, pelo item — por exemplo, garrafa PET.
         </p>
         <p className="mt-8 border-l-2 border-lime-400 pl-4 text-sm leading-relaxed text-stone-500">
           Conectando pessoas e materiais a novas possibilidades.

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { BuyerWithProducts, Product } from '../types'
-import { filterBuyersByProduct, matchesProductQuery, nearbyProductMatches } from './productSearch'
+import { collectItemNames, filterBuyersByProduct, matchesProductQuery, nearbyProductMatches } from './productSearch'
 
 function product(partial: Partial<Product> & Pick<Product, 'id' | 'name' | 'recicling_code'>): Product {
   return partial
@@ -73,6 +73,26 @@ describe('filterBuyersByProduct', () => {
     expect(filtered).toHaveLength(1)
     expect(filtered[0]?.name).toBe('Ana Silva')
     expect(filtered[0]?.products).toEqual([pet])
+  })
+
+  it('filtra pelo nome exato do item', () => {
+    const filtered = filterBuyersByProduct([ana, bruno], 'ALL', '', 'Garrafa PET')
+    expect(filtered).toHaveLength(1)
+    expect(filtered[0]?.products).toEqual([pet])
+    expect(filterBuyersByProduct([ana, bruno], 'ALL', '', 'garrafa pet')[0]?.products).toEqual([pet])
+    expect(filterBuyersByProduct([ana, bruno], 'ALL', '', 'Garrafa')).toEqual([])
+  })
+
+  it('cruza a cor com o item', () => {
+    expect(filterBuyersByProduct([ana], 'AZUL', '', 'Garrafa PET')).toEqual([])
+    expect(filterBuyersByProduct([ana], 'AZUL', '', 'Papelão')[0]?.products).toEqual([paper])
+  })
+})
+
+describe('collectItemNames', () => {
+  it('lista só os itens da cor escolhida', () => {
+    expect(collectItemNames([ana, bruno], 'ALL', '')).toEqual(['Garrafa de Vidro', 'Garrafa PET', 'Papelão'])
+    expect(collectItemNames([ana, bruno], 'PET', '')).toEqual(['Garrafa PET'])
   })
 })
 

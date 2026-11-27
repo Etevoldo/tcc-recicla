@@ -5,7 +5,7 @@ import { ErrorState } from '../../../components/ui/ErrorState'
 import { Modal } from '../../../components/ui/Modal'
 import { Spinner } from '../../../components/ui/Spinner'
 import { formatPrice } from '../../../lib/format'
-import { getRecyclingCode } from '../../buyers/constants/recyclingCodes'
+import { formatRecyclingColor, getRecyclingCode } from '../../buyers/constants/recyclingCodes'
 import { deleteProduct, getProducts, updateProduct } from '../../buyers/services/productsApi'
 import type { Product, ProductInput } from '../../buyers/types'
 import { productPrice } from '../../buyers/types'
@@ -55,7 +55,7 @@ export function ProductsAdminPage() {
             <thead>
               <tr className="border-b border-stone-200 text-stone-500">
                 <th className="px-4 py-3 font-semibold">Produto</th>
-                <th className="px-4 py-3 font-semibold">Tipo</th>
+                <th className="px-4 py-3 font-semibold">Cor</th>
                 <th className="px-4 py-3 font-semibold">Comprador</th>
                 <th className="px-4 py-3 font-semibold">Preço</th>
                 <th className="px-4 py-3 font-semibold">Ações</th>
@@ -68,7 +68,7 @@ export function ProductsAdminPage() {
                 return (
                   <tr key={product.id} className="border-b border-stone-100">
                     <td className="px-4 py-3 font-medium text-green-950">{product.name}</td>
-                    <td className="px-4 py-3">{info.label}</td>
+                    <td className="px-4 py-3">{formatRecyclingColor(info)}</td>
                     <td className="px-4 py-3">{product.owner?.name ?? '—'}</td>
                     <td className="px-4 py-3">{price != null ? formatPrice(price) : '—'}</td>
                     <td className="px-4 py-3">
