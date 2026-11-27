@@ -126,7 +126,7 @@ export function ResultsPage() {
 
       {query.data && query.data.buyers.length > 0 && (
         <>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-4 rounded-3xl border border-stone-200 bg-white p-5 shadow-sm sm:grid-cols-2">
             <MaterialFilter value={material} onChange={(next) => replaceParams(String(radius), next)} />
             <ItemFilter names={itemNames} value={item} onChange={setItem} />
           </div>

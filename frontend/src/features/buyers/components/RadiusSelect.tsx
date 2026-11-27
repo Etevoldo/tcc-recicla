@@ -1,5 +1,5 @@
 import { SEARCH_RADIUS_KM, type SearchRadiusKm } from '../services/searchApi'
-import { Select } from '../../../components/ui/Select'
+import { FilterSelect } from './FilterSelect'
 
 export function RadiusSelect({
   id = 'raio',
@@ -13,17 +13,12 @@ export function RadiusSelect({
   label?: string
 }) {
   return (
-    <Select
+    <FilterSelect
       id={id}
       label={label}
-      value={value}
-      onChange={(event) => onChange(Number(event.target.value) as SearchRadiusKm)}
-    >
-      {SEARCH_RADIUS_KM.map((km) => (
-        <option key={km} value={km}>
-          {km} km
-        </option>
-      ))}
-    </Select>
+      value={String(value)}
+      onChange={(next) => onChange(Number(next) as SearchRadiusKm)}
+      options={SEARCH_RADIUS_KM.map((km) => ({ value: String(km), label: `${km} km` }))}
+    />
   )
 }
